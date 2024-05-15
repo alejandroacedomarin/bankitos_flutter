@@ -1,3 +1,5 @@
+
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -18,11 +20,11 @@ class UserProfileController extends GetxController {
     places: [],
     reviews: [],
     conversations: [],
-    user_rating: 0.0,
-    photo: '',
+    user_rating: 3.7,
+    photo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVmX1T3VLwWgvuQtQye5EbgUMAZZcK3_Tgjg&s',
     description: '',
-    dni: '',
-    personality: '',
+    dni: '77777777',
+    personality: 'Interesante',
     address: '',
     housing_offered: [],
     emergency_contact: {},
@@ -64,16 +66,41 @@ class UserProfileScreen extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 50.0,
-                  backgroundImage: NetworkImage(controller.user.value.photo), // Mostramos la imagen del usuario
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: _buildStarRating(controller.user.value.user_rating),
                 ),
+                CircleAvatar(
+                  
+                  radius: 50.0,
+                  backgroundImage: controller.user.value.photo.isEmpty
+                  ? AssetImage('assets/userdefec.png') as ImageProvider<Object>?
+                  : NetworkImage(controller.user.value.photo), // URL de la foto si está disponible
+                ),
+
                 SizedBox(height: 10.0),
                 Text(
                   '${controller.user.value.first_name} ${controller.user.value.last_name}',
                   style: TextStyle(fontSize: 16.0),
                   textAlign: TextAlign.center,
                 ),
+                SizedBox(height: 10.0),
+    ExpansionTile(
+      title: Text(
+        'Description',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            controller.user.value.description,
+            style: TextStyle(fontSize: 14.0),
+          ),
+        ),
+      ],
+    ),
               ],
             ),
             SizedBox(height: 20.0),
@@ -128,47 +155,83 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 
-  // Métodos de construcción de bloques de información
   Widget _buildProfileInformation(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$label:',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(width: 10.0), // Espacio entre el label y el valor
-        Expanded(
-          child: Text(
-            value,
-            overflow: TextOverflow.ellipsis, // Ajusta el texto si es demasiado largo
-          ),
-        ),
-        SizedBox(height: 10.0),
-      ],
-    );
+  // Verifica si el valor no está vacío
+  if (value.isEmpty) {
+    // Si el valor está vacío, no muestra nada
+    return SizedBox.shrink();
   }
 
-  Widget _buildPersonalInformation(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$label:',
-          style: TextStyle(fontWeight: FontWeight.bold),
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        '$label:',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      SizedBox(width: 10.0), // Espacio entre el label y el valor
+      Expanded(
+        child: Text(
+          value,
+          overflow: TextOverflow.ellipsis, // Ajusta el texto si es demasiado largo
         ),
-        SizedBox(width: 10.0), // Espacio entre el label y el valor
-        Expanded(
-          child: Text(
-            value,
-            overflow: TextOverflow.ellipsis, // Ajusta el texto si es demasiado largo
-          ),
-        ),
-        SizedBox(height: 20.0),
-      ],
-    );
+      ),
+      SizedBox(height: 10.0),
+    ],
+  );
+}
+
+Widget _buildPersonalInformation(String label, String value) {
+  // Verifica si el valor no está vacío
+  if (value.isEmpty) {
+    // Si el valor está vacío, no muestra nada
+    return SizedBox.shrink();
   }
 
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        '$label:',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      SizedBox(width: 10.0), // Espacio entre el label y el valor
+      Expanded(
+        child: Text(
+          value,
+          overflow: TextOverflow.ellipsis, // Ajusta el texto si es demasiado largo
+        ),
+      ),
+      SizedBox(height: 20.0),
+    ],
+  );
+}
+Widget _buildStarRating(double rating) {
+  List<Widget> stars = [];
+  print(rating);
+  // Calcula las estrellas llenas
+  int fullStars = rating.floor();
+  for (int i = 0; i < fullStars; i++) {
+    stars.add(Icon(Icons.star, color: Colors.yellow));
+  }
+  
+  // Calcula la fracción de estrella
+  double fraction = rating - fullStars;
+  if (fraction > 0) {
+    stars.add(Icon(Icons.star_half, color: Colors.yellow));
+  }
+  
+  // Añade las estrellas vacías restantes
+  int emptyStars = 5 - stars.length;
+  for (int i = 0; i < emptyStars; i++) {
+    stars.add(Icon(Icons.star_border, color: Colors.yellow));
+  }
+  
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: stars,
+  );
+}
   Widget _buildPasswordField(String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

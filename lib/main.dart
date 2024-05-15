@@ -16,11 +16,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      /* routes: {
-        //'/profile': (context) => UserProfileScreen(),
-        //'/edit_profile': (context) => EditProfileScreen(),
-      }, */  
-      home: LoginScreen(),
+      //home: LoginScreen(),
+      home: NavigationMenu(),
     );
   }
 }

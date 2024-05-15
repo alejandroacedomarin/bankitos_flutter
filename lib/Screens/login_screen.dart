@@ -84,7 +84,7 @@ class _LoginScreen extends State<LoginScreen> {
           // Imagen de fondo
           SizedBox.expand(
             child: Image.asset(
-              'ImagenFondoLogin.jpg',
+              'assets/ImagenFondoLogin.jpg',
               fit: BoxFit.cover,
             ),
           ),
@@ -106,7 +106,7 @@ class _LoginScreen extends State<LoginScreen> {
                   alignment: Alignment.center,
                   children: [
                     Image.asset(
-                      'logo.png', // Imagen superpuesta
+                      'assets/logo.png', // Imagen superpuesta
                       width: 450,
                       height: 450,
                       fit: BoxFit.cover,
