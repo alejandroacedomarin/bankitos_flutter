@@ -19,9 +19,8 @@ class MyApp extends StatelessWidget {
       /* routes: {
         //'/profile': (context) => UserProfileScreen(),
         //'/edit_profile': (context) => EditProfileScreen(),
-      }, */
-      
-       home: NavigationMenu(),
+      }, */  
+      home: LoginScreen(),
     );
   }
 }

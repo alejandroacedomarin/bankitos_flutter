@@ -12,8 +12,8 @@ class SignInButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         fixedSize: const Size(400, 55),
-        backgroundColor: Pallete.salmonColor,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.orange,
+        foregroundColor: Color.fromARGB(198, 0, 0, 0),
       ),
       child: Text(text, style: const TextStyle(
         fontWeight: FontWeight.w600,

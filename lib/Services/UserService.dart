@@ -109,6 +109,8 @@ class UserService {
 
     data = response.data.toString();
     print('Data: $data');
+
+    saveToken(data);
     //Printeamos el status code recibido por el backend
 
     statusCode = response.statusCode;

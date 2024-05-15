@@ -15,21 +15,24 @@ class ParamTextBox extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.orange, // Cambia este color al que prefieras
           enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(
-            color: Pallete.greyColor,
+            color: Color.fromARGB(255, 0, 1, 4),
             width: 3,
           ),
           borderRadius: BorderRadius.circular(10),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(
-            color: Pallete.salmonColor,
+            color: Color.fromARGB(255, 7, 4, 3),
             width: 3,
           ),
           borderRadius: BorderRadius.circular(10),
           ),
           hintText: text,
+          
         ),
         
       ),
