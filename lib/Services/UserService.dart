@@ -21,6 +21,21 @@ class UserService {
     final box = GetStorage();
     return box.read('token');
   }
+
+  void saveUserId(String id){
+    final box = GetStorage();
+    box.write('id', id);
+  }
+
+  String getUserId(){
+    final box = GetStorage();
+    if(box.read('id').isEmpty){
+      return '';
+    }
+    else{
+      return box.read('id');
+    }
+  }
   //Función createUser
   Future<int> createUser(User newUser)async{
     print('createUser');
@@ -42,6 +57,7 @@ class UserService {
     if (statusCode == 201) {
       // Si el usuario se crea correctamente, retornamos el código 201
       print('201');
+      logIn(newUser);
       return 201;
     } else if (statusCode == 400) {
       // Si hay campos faltantes, retornamos el código 400
@@ -61,7 +77,50 @@ class UserService {
     }
   }
 
-  Future<List<Place>> getData() async {
+  Future<int> createPlace(Place newPlace)async{
+    print('createPlace');
+   
+   dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
+
+      print('token: ${token}');
+
+
+      if(token != null){
+
+          options.headers['x-access-token'] = token;
+      }
+      // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
+      return handler.next(options);
+    },
+  ));
+
+    print('URL: $baseUrl/place');
+    Response response = await dio.post('$baseUrl/place', data: newPlace.toJson());
+
+    data = response.data.toString();
+    print('Data: $data');
+    statusCode = response.statusCode;
+    print('Status code: $statusCode');
+
+    if (statusCode == 201) {
+      print('201');
+      return 201;
+    } else if (statusCode == 400) {
+      print('400');
+      return 400;
+    } else if (statusCode == 500) {
+      print('500');
+      return 500;
+    } else {
+      print('-1');
+      return -1;
+    }
+  }
+
+  Future<List<Place>> getData(String id) async {
   print('getData');
   // Interceptor para agregar el token a la cabecera 'x-access-token'
   dio.interceptors.add(InterceptorsWrapper(
@@ -69,18 +128,21 @@ class UserService {
       // Obtener el token guardado
       final token = getToken();
 
-      print(token);
-      
-      // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
-      if (token != null) {
-        options.headers['x-access-token'] = token;
+      print(token);  
+
+      if(token != null){
+          
+          options.headers['x-access-token'] = token;
       }
       return handler.next(options);
     },
   ));
   
   try {
-    var res = await dio.get('$baseUrl/place');
+    
+    print('URL: $baseUrl/placebyuser/$id');
+    var res = await dio.get('$baseUrl/placebyuser/$id');
+    
     List<dynamic> responseData = res.data; // Obtener los datos de la respuesta
   
     // Convertir los datos en una lista de objetos Place
@@ -94,47 +156,51 @@ class UserService {
   }
 }
 
-
-  Future<int> logIn(logIn)async{
+Future<int> logIn(logIn) async {
     print('LogIn');
     
-    //Aquí llamamos a la función request
+    // Aquí llamamos a la función request
     print('URL: $baseUrl/login');
-
     print(logInToJson(logIn));
     
     Response response = await dio.post('$baseUrl/login', data: logInToJson(logIn));
-    //En response guardamos lo que recibimos como respuesta
-    //Printeamos los datos recibidos
+    // En response guardamos lo que recibimos como respuesta
+    // Printeamos los datos recibidos
 
-    data = response.data.toString();
+    // Asegúrate de que response.data es un mapa decodificado
+    Map<String, dynamic> data = response.data;
     print('Data: $data');
 
-    saveToken(data);
-    //Printeamos el status code recibido por el backend
+    // Obtener el token y userId del mapa
+    String token = data['token'];
+    String userId = data['_id'];
 
-    statusCode = response.statusCode;
+    print('Token: $token');
+    print('ID: $userId');
+
+    // Guardar el token y userId por separado
+    saveToken(token);
+    saveUserId(userId); 
+
+    // Printeamos el status code recibido por el backend
+    int statusCode = response.statusCode!;
     print('Status code: $statusCode');
 
     if (statusCode == 200) {
       // Si el usuario se crea correctamente, retornamos el código 201
-      saveToken(data);
       print('200');
       return 201;
     } else if (statusCode == 400) {
       // Si hay campos faltantes, retornamos el código 400
       print('400');
-
       return 400;
     } else if (statusCode == 500) {
       // Si hay un error interno del servidor, retornamos el código 500
       print('500');
-
       return 500;
     } else {
       // Otro caso no manejado
       print('-1');
-
       return -1;
     }
   }
@@ -142,7 +208,8 @@ class UserService {
   Map<String, dynamic> logInToJson(logIn) {
     return {
       'email': logIn.email,
-      'password': logIn.password
+      'password': logIn.password,
     };
   }
+
 }
