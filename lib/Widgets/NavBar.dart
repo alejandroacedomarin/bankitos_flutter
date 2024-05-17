@@ -1,7 +1,10 @@
+import 'package:bankitos_flutter/Screens/MyPlacesList.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bankitos_flutter/Screens/Profile.dart';
+import 'package:bankitos_flutter/Screens/CreatePlace.dart';
+
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -26,9 +29,9 @@ class NavigationMenu extends StatelessWidget {
 
           NavigationDestination(icon: Icon(Iconsax.home), label: 'Home'),
 
-          NavigationDestination(icon: Icon (Iconsax.shop), label: 'Store'),
+          NavigationDestination(icon: Icon(Iconsax.add_square), label: 'Create Place'),
 
-          NavigationDestination(icon: Icon(Iconsax.heart), label: 'Wishlist'),
+          NavigationDestination(icon: Icon(Iconsax.house), label: 'Mis Places'),
 
           NavigationDestination(icon: Icon(Iconsax.user), label: 'Profile'),
 
@@ -46,6 +49,6 @@ class NavigationController extends GetxController{
 
   final Rx<int> selectedIndex = 0.obs;
 
-  final screens = [Container(color: Colors.green), Container(color: Colors.purple), Container (color: Colors.orange), UserProfileScreen()];
+  final screens = [Container(color: Colors.green), CreatePostScreen(), PlaceListPage(), UserProfileScreen()];
 
 }

@@ -8,7 +8,6 @@ class User {
   final String email;
   final String phone_number;
   final String birth_date;
-  final String middle_name; // middle_name es opcional, por lo que lo definimos como String?
   final List<String> places; // places es una lista de IDs, por lo que lo definimos como List<String>
   final List<String> reviews; // reviews es una lista de IDs, por lo definimos como List<String>
   final List<String> conversations; // conversations es una lista de IDs, por lo que lo definimos como List<String>
@@ -20,9 +19,9 @@ class User {
   final String address; // address es una String
   final List<String> housing_offered; // housing_offered es una lista de IDs, por lo que lo definimos como List<String>
   final Map<String, String> emergency_contact; // emergency_contact es un mapa de full_name y telephone, por lo que lo definimos como Map<String, String>
-  final bool user_deactivated; // user_deactivated es un booleano
-  final DateTime creation_date; // creation_date es una fecha y hora
-  final DateTime modified_date; // modified_date es una fecha y hora
+  final bool? user_deactivated; // user_deactivated es un booleano
+  final DateTime? creation_date; // creation_date es una fecha y hora
+  final DateTime? modified_date; // modified_date es una fecha y hora
 
   User({
     required this.id,
@@ -46,9 +45,9 @@ class User {
     required this.address,
     required this.housing_offered,
     required this.emergency_contact,
-    required this.user_deactivated,
-    required this.creation_date,
-    required this.modified_date,
+     this.user_deactivated,
+     this.creation_date,
+    this.modified_date,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -103,9 +102,6 @@ class User {
       'address': address,
       'housing_offered': housing_offered,
       'emergency_contact': emergency_contact,
-      'user_deactivated': user_deactivated,
-      'creation_date': creation_date.toIso8601String(),
-      'modified_date': modified_date.toIso8601String(),
     };
   }
   
