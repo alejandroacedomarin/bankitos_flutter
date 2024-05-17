@@ -219,6 +219,7 @@ Future<void> selectDate(BuildContext context) async {
     else{
       if(GetUtils.isEmail(emailController.text)==true){
         User newUser = User(
+          id: "",
       first_name: firstNameController.text,      
       middle_name: middleNameController.text,
       last_name: lastNameController.text,

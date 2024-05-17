@@ -1,6 +1,7 @@
 class User {
   final String id;
   final String first_name;
+  final String middle_name;
   final String last_name;
   final String gender;
   final String role;
@@ -26,6 +27,7 @@ class User {
   User({
     required this.id,
     required this.first_name,
+    required this.middle_name,
     required this.last_name,
     required this.gender,
     required this.role,
@@ -33,7 +35,6 @@ class User {
     required this.email,
     required this.phone_number,
     required this.birth_date,
-    required this.middle_name,
     required this.places,
     required this.reviews,
     required this.conversations,
