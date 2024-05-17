@@ -6,38 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Screens/EditProfile.dart';
 
-class UserProfileController extends GetxController {
-  final user = User(
-    first_name: 'John',
-    last_name: 'Doe',
-    gender: 'Male',
-    role: 'User',
-    password: 'password123',
-    email: 'john@example.com',
-    phone_number: '1234567890',
-    birth_date: '1990-01-01',
-    middle_name: 'Diiioooosss',
-    places: [],
-    reviews: [],
-    conversations: [],
-    user_rating: 3.7,
-    photo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVmX1T3VLwWgvuQtQye5EbgUMAZZcK3_Tgjg&s',
-    description: 'AAALALALALALALALALALLALA',
-    dni: '77777777',
-    personality: 'Interesante',
-    address: 'Carrer del GG',
-    housing_offered: [],
-    emergency_contact: {},
-    user_deactivated: false,
-    creation_date: DateTime.now(),
-    modified_date: DateTime.now(),
-  ).obs;
-  
-  void updateUser(User newUser) {
-    user(newUser);
-    GetStorage().write('user', newUser.toJson());
-  }
-}
+
 void updateUser(User newUser) {
     
     GetStorage().write('user', newUser);
@@ -59,6 +28,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
      updateUser(User(
+      id: '',
     first_name: 'John',
     last_name: 'Doe',
     gender: 'Male',
@@ -295,6 +265,7 @@ Widget _buildStarRating(double rating) {
         SizedBox(width: 10.0), // Espacio entre el label y el valor
         Expanded(
           child: Text(
+            
             '${'*' * value.length}',
             overflow: TextOverflow.ellipsis, // Ajusta el texto si es demasiado largo
             style: TextStyle(fontFamily: 'Courier'),

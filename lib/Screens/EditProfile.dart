@@ -1,12 +1,23 @@
+import 'dart:typed_data';
+
 import 'package:bankitos_flutter/Screens/Profile.dart';
+import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/utils/pickImage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
+import 'package:image_picker/image_picker.dart';
+
+
+
+
+late UserService userService;
+
 void updateUser(User newUser) {
-    
-    GetStorage().write('user', newUser);
+  GetStorage().write('user', newUser);
 }
+
 class EditProfileScreen extends StatefulWidget {
   final User user;
 
@@ -30,26 +41,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _dniController;
   late TextEditingController _personalityController;
   late TextEditingController _addressController;
-
+  late TextEditingController _currentPasswordController= TextEditingController();
+  late TextEditingController _newPasswordController= TextEditingController();
+  late TextEditingController _verifyPasswordController= TextEditingController();
+  
+  bool _isEditingPassword = false;
   @override
   void initState() {
     super.initState();
+    userService = UserService();
+
+    
     // Inicializa los controladores con los valores actuales del usuario
     _firstNameController = TextEditingController(text: widget.user.first_name);
-    _middleNameController = TextEditingController(text: widget.user.middle_name);
+    _middleNameController =
+        TextEditingController(text: widget.user.middle_name);
     _lastNameController = TextEditingController(text: widget.user.last_name);
     _genderController = TextEditingController(text: widget.user.gender);
     _emailController = TextEditingController(text: widget.user.email);
-    _phoneNumberController = TextEditingController(text: widget.user.phone_number);
+    _phoneNumberController =
+        TextEditingController(text: widget.user.phone_number);
     _birthDateController = TextEditingController(text: widget.user.birth_date);
     _passwordController = TextEditingController(text: widget.user.password);
     _photoController = TextEditingController(text: widget.user.photo);
-    _descriptionController = TextEditingController(text: widget.user.description);
+    _descriptionController =
+        TextEditingController(text: widget.user.description);
     _dniController = TextEditingController(text: widget.user.dni);
-    _personalityController = TextEditingController(text: widget.user.personality);
+    _personalityController =
+        TextEditingController(text: widget.user.personality);
     _addressController = TextEditingController(text: widget.user.address);
-    
-
   }
 
   @override
@@ -68,56 +88,225 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _dniController.dispose();
     _personalityController.dispose();
     _addressController.dispose();
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _verifyPasswordController.dispose();
     super.dispose();
   }
-
+  
+  void selectImage() async {
+    Uint8List img = await pickImage(ImageSource.gallery);
+    _photoController = img as TextEditingController;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Profile'),
+        appBar: AppBar(
+          title: Text('Edit Profile'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50.0,
+                        backgroundImage: widget.user.photo.isEmpty
+                            ? AssetImage('assets/userdefec.png')
+                                as ImageProvider<Object>?
+                            : NetworkImage(_photoController.text),
+                      ),
+                      Positioned(
+                          child: IconButton(
+                        onPressed: selectImage,
+                        icon: Icon(Icons.add_a_photo_outlined),
+                      ),
+                       bottom: -10,
+                       left: 65,
+                      )
+                    ],
+                  ),
+                  _buildEditableTextField('First Name', _firstNameController),
+                  _buildEditableTextField('Middle Name', _middleNameController),
+                  _buildEditableTextField('Last Name', _lastNameController),
+                  buildEditableSelectionField('Gender', _genderController),
+                  _buildEditableTextField('Dni', _dniController),
+                  _buildEditableTextField('Email', _emailController),
+                  _buildEditableTextField(
+                      'Phone Number', _phoneNumberController),
+                  _buildEditableTextField('Birth Date', _birthDateController),
+                  _buildPasswordField('Password', _passwordController),
+                  _buildEditableTextField('Address', _addressController),
+                  _buildEditableTextField(
+                      'Personality', _personalityController),
+                  _buildEditableTextField(
+                      'Description', _descriptionController),
+                  SizedBox(height: 20.0),
+                  ElevatedButton(
+                    onPressed: _saveChanges,
+                    child: Text('Save'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ));
+  }
+
+  Widget _buildEditableTextField(
+      String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                label,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(width: 10), // Espaciado entre el texto y el TextField
+          Expanded(
+            flex: 3,
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: controller.text,
+              ),
+            ),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+    );
+  }
+  Widget buildEditableSelectionField(
+  String label, 
+  TextEditingController controller,
+) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 1,
+          child: Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        SizedBox(width: 10), // Espaciado entre el texto y el ScrollView
+        Expanded(
+          flex: 3,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
               children: [
-            
-            
-            CircleAvatar(
-              radius: 50.0,
-              backgroundImage: widget.user.photo.isEmpty
-                  ? AssetImage('assets/userdefec.png') as ImageProvider<Object>?
-                  : NetworkImage(widget.user.photo),
+                _buildOption('Male', controller, () => setState(() {})),
+                _buildOption('Female', controller,  () => setState(() {})),
+                _buildOption('Other', controller,  () => setState(() {})),
+              ],
             ),
-            _buildEditableTextField('First Name', _firstNameController),
-            _buildEditableTextField('Middle Name', _middleNameController),
-            _buildEditableTextField('Last Name', _lastNameController),
-            _buildEditableTextField('Gender', _genderController),
-            _buildEditableTextField('Dni', _dniController),
-            _buildEditableTextField('Email', _emailController),
-            _buildEditableTextField('Phone Number', _phoneNumberController),
-            _buildEditableTextField('Birth Date', _birthDateController),
-            _buildEditableTextField('Password', _passwordController),
-            _buildEditableTextField('Address', _addressController),
-            _buildEditableTextField('Personality', _personalityController),
-            _buildEditableTextField('Description', _descriptionController),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: _saveChanges,
-              child: Text('Save'),
-            ),
-          ],
+          ),
         ),
       ],
+    ),
+  );
+}
+
+Widget _buildOption(String option, TextEditingController controller, VoidCallback updateState) {
+  bool isSelected = controller.text == option;
+
+  return GestureDetector(
+    onTap: () {
+      if (!isSelected) {
+        controller.text = option;
+        updateState(); // Actualizar el estado del widget
+      }
+    },
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      margin: EdgeInsets.only(right: 10),
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.blue : null,
+        borderRadius: BorderRadius.circular(20),
       ),
-    )
+      child: Text(
+        option,
+        style: TextStyle(
+          color: isSelected ? Colors.white : Colors.black,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+    ),
+  );
+}
+Widget _buildPasswordField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Divider(), 
+          Row(
+            
+            children: [
+              
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () {
+                  setState(() {
+                    _isEditingPassword = !_isEditingPassword;
+                  });
+                },
+              ),
+            ],
+          ),
+          if (_isEditingPassword)
+            Column(
+              children: [
+                 
+                _buildPasswordTextField('Current Password', _currentPasswordController),
+                _buildPasswordTextField('New Password', _newPasswordController),
+                _buildPasswordTextField('Verify Password', _verifyPasswordController),
+                
+              ],
+            )
+          else
+          
+            TextField(
+              controller: controller,
+              obscureText: true,
+              readOnly: true,
+              decoration: InputDecoration(
+                hintText: '********',
+              ),
+            ),
+          Divider(), 
+        ],
+      ),
     );
   }
 
-  Widget _buildEditableTextField(String label, TextEditingController controller) {
+  Widget _buildPasswordTextField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -135,8 +324,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             flex: 3,
             child: TextField(
               controller: controller,
+              obscureText: true,
               decoration: InputDecoration(
-                hintText: controller.text,
+                hintText: 'Enter $label',
               ),
             ),
           ),
@@ -145,43 +335,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  void _saveChanges() {
-    // Guarda los cambios en el usuario
+  
 
-  // Crea un nuevo usuario con los valores de los controladores
-  User updatedUser = User(
-    first_name: _firstNameController.text,
-    middle_name: _middleNameController.text,
-    last_name: _lastNameController.text,
-    gender: _genderController.text,
-    role: widget.user.role,
-    email: _emailController.text,
-    phone_number: _phoneNumberController.text,
-    birth_date: _birthDateController.text,
-    // Inicializa algunos parámetros con valores predeterminados
-    password: _passwordController.text,
-    places: widget.user.places,
-    reviews: widget.user.reviews,
-    conversations:widget.user.conversations,
-    user_rating: widget.user.user_rating,
-    photo: _photoController.text,
-    description: _descriptionController.text,
-    dni: _dniController.text,
-    personality: _personalityController.text,
-    address: _addressController.text,
-    housing_offered: widget.user.housing_offered,
-    emergency_contact: widget.user.emergency_contact,
-    user_deactivated: widget.user.user_deactivated,
-    creation_date: widget.user.creation_date,
-    modified_date: widget.user.modified_date,
-  );
-  updateUser(updatedUser);
-  // Actualiza el usuario en el controlador, si fuera necesario
-  print(updatedUser);
+  Future<void> _saveChanges() async {
+    
+    User updatedUser = User(
+      id: widget.user.id,
+      first_name: _firstNameController.text,
+      middle_name: _middleNameController.text,
+      last_name: _lastNameController.text,
+      gender: _genderController.text,
+      role: widget.user.role,
+      email: _emailController.text,
+      phone_number: _phoneNumberController.text,
+      birth_date: _birthDateController.text,
+      // Inicializa algunos parámetros con valores predeterminados
+      password: _passwordController.text,
+      places: widget.user.places,
+      reviews: widget.user.reviews,
+      conversations: widget.user.conversations,
+      user_rating: widget.user.user_rating,
+      photo: _photoController.text,
+      description: _descriptionController.text,
+      dni: _dniController.text,
+      personality: _personalityController.text,
+      address: _addressController.text,
+      housing_offered: widget.user.housing_offered,
+      emergency_contact: widget.user.emergency_contact,
+      user_deactivated: widget.user.user_deactivated,
+      creation_date: widget.user.creation_date,
+      modified_date: widget.user.modified_date,
+    );
+    
+    // Actualiza el usuario en el controlador, si fuera necesario
+    //print(updatedUser);
 
-  // Regresa a la pantalla anterior
-  Navigator.pop(context);
-}
-    // Actualiza el usuario en el controlador
-
+    // Regresa a la pantalla anterior
+    
+    
+    try {
+      await userService.putUser(updatedUser.id, updatedUser).then((value) => {updateUser(updatedUser),Navigator.pop(context)});
+    } catch (error) {
+      print('Error al comunicarse con el backend: $error');
+    }
+  }
+  // Actualiza el usuario en el controlador
 }

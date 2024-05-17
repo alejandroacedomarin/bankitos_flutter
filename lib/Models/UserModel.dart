@@ -1,4 +1,5 @@
 class User {
+  final String id;
   final String first_name;
   final String last_name;
   final String gender;
@@ -24,6 +25,7 @@ class User {
   final DateTime modified_date; // modified_date es una fecha y hora
 
   User({
+    required this.id,
     required this.first_name,
     required this.last_name,
     required this.gender,
@@ -51,6 +53,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      id: json['_id'],
       first_name: json['first_name'],
       last_name: json['last_name'],
       gender: json['gender'],
@@ -79,6 +82,7 @@ class User {
 
   Map<String, dynamic> toJson() {
     return{
+      '_id': id,
       'first_name': first_name,
       'last_name': last_name,
       'gender': gender,
@@ -104,5 +108,6 @@ class User {
       'modified_date': modified_date.toIso8601String(),
     };
   }
+  
 }
 

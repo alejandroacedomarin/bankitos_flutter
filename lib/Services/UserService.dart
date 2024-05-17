@@ -60,7 +60,70 @@ class UserService {
       return -1;
     }
   }
+Future<User> putUser(id,user) async {
+  print('getData');
+  // Interceptor para agregar el token a la cabecera 'x-access-token'
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
 
+      print(token);
+      
+      // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
+      if (token != null) {
+        options.headers['x-access-token'] = token;
+      }
+      return handler.next(options);
+    },
+  ));
+  Map<String, dynamic> revtoJson(user) {
+    return{
+      '_id': user.id,
+      'first_name': user.first_name,
+      'last_name': user.last_name,
+      'gender': user.gender,
+      'role': user.role,
+      'password': user.password,
+      'email': user.email,
+      'phone_number': user.phone_number,
+      'birth_date': user.birth_date,
+      'middle_name': user.middle_name,
+      'places': user.places,
+      'reviews': user.reviews,
+      'conversations': user.conversations,
+      'user_rating': user.user_rating,
+      'photo': user.photo,
+      'description': user.description,
+      'dni': user.dni,
+      'personality': user.personality,
+      'address': user.address,
+      'housing_offered': user.housing_offered,
+      'emergency_contact': user.emergency_contact,
+      'user_deactivated': user.user_deactivated,
+      'creation_date': user.creation_date.toIso8601String(),
+      'modified_date': user.modified_date.toIso8601String(),
+    };
+  }
+  
+  try {
+    
+    var res = await dio.put('$baseUrl/review/$id', data: revtoJson(user));
+    print(res.data);
+    print('akiiiiiiiiiiiiiiiii');
+    User responseData = res.data; // Obtener los datos de la respuesta
+  
+    // Convertir los datos en una lista de objetos Place
+    //List<Review> reviews = responseData.map((data) => Review.fromJson(data)).toList();
+  
+    return responseData; // Devolver la lista de lugares
+  } catch (e) {
+    // Manejar cualquier error que pueda ocurrir durante la solicitud
+    print('Error fetching data: $e');
+    throw e; // Relanzar el error para que el llamador pueda manejarlo
+  }
+  
+}
   Future<List<Place>> getData() async {
   print('getData');
   // Interceptor para agregar el token a la cabecera 'x-access-token'
