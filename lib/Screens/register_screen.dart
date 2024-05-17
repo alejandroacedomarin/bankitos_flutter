@@ -108,7 +108,7 @@ class _RegisterScreen extends State<RegisterScreen> {
               const SizedBox(height: 15),
               ParamTextBox(controller: controller.lastNameController, text: 'Last Name'),
               const SizedBox(height: 15),
-              ParamTextBox(controller: controller.genderController, text: 'Gender'),
+              _buildGenderSelectionField('Gender', controller.genderController),
               const SizedBox(height: 15),
               ParamTextBox(controller: controller.roleController, text: 'Role'),
               const SizedBox(height: 15),
@@ -166,6 +166,67 @@ class _RegisterScreen extends State<RegisterScreen> {
       ),
     );
   }
+
+  Widget _buildGenderSelectionField(String label, TextEditingController controller) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.orange, // Fondo naranja
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildOption('Male', controller, () => setState(() {})),
+                _buildOption('Female', controller, () => setState(() {})),
+                _buildOption('Other', controller, () => setState(() {})),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOption(String option, TextEditingController controller, VoidCallback updateState) {
+    bool isSelected = controller.text == option;
+
+    return GestureDetector(
+      onTap: () {
+        if (!isSelected) {
+          controller.text = option;
+          updateState(); // Actualizar el estado del widget
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        margin: EdgeInsets.only(right: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : null,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          option,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class RegisterScreenController extends GetxController {
@@ -190,7 +251,7 @@ class RegisterScreenController extends GetxController {
   bool invalid = false;
   bool parameters = false;
 
-Future<void> selectDate(BuildContext context) async {
+  Future<void> selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -201,7 +262,6 @@ Future<void> selectDate(BuildContext context) async {
       birthController.text = pickedDate.toString(); // Actualizar el controlador de texto con la fecha seleccionada
     }
   }
-
 
   void signUp() {
     if(firstNameController.text.isEmpty || middleNameController.text.isEmpty || lastNameController.text.isEmpty || 
@@ -270,5 +330,3 @@ Future<void> selectDate(BuildContext context) async {
     }
   }
 }
-
-

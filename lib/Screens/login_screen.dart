@@ -147,6 +147,7 @@ class _LoginScreen extends State<LoginScreen> {
                           ParamTextBox(
                             controller: controller.contrasenaController,
                             text: 'Contraseña',
+                            obscureText: true,
                           ),
                           const SizedBox(height: 40),
                           SignInButton(

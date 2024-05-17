@@ -29,7 +29,7 @@ class NavigationMenu extends StatelessWidget {
 
           NavigationDestination(icon: Icon(Iconsax.home), label: 'Home'),
 
-          NavigationDestination(icon: Icon(Iconsax.add_square), label: 'Create Place'),
+          NavigationDestination(icon: Icon(Iconsax.activity), label: '?'),
 
           NavigationDestination(icon: Icon(Iconsax.house), label: 'Mis Places'),
 
@@ -49,6 +49,6 @@ class NavigationController extends GetxController{
 
   final Rx<int> selectedIndex = 0.obs;
 
-  final screens = [Container(color: Colors.green), CreatePostScreen(), PlaceListPage(), UserProfileScreen()];
+  final screens = [Container(color: Colors.green),Container(color: Colors.orange), PlaceListPage(), UserProfileScreen()];
 
 }

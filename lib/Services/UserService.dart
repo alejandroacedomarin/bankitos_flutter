@@ -76,6 +76,91 @@ class UserService {
       return -1;
     }
   }
+
+Future<int> deletePlace(String id)async{
+    print('deletePlace');
+   
+   dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
+
+      print('token: ${token}');
+      
+      // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
+      if (token != null) {
+        options.headers['x-access-token'] = token;
+      }
+      return handler.next(options);
+    },
+  ));
+
+    print("URL: $baseUrl/place/$id");
+    Response response = await dio.delete('$baseUrl/place/$id');
+
+    data = response.data.toString();
+    print('Data: $data');
+    statusCode = response.statusCode;
+    print('Status code: $statusCode');
+
+    if (statusCode == 201) {
+      print('201');
+      return 201;
+    } else if (statusCode == 400) {
+      print('400');
+      return 400;
+    } else if (statusCode == 500) {
+      print('500');
+      return 500;
+    } else {
+      print('-1');
+      return -1;
+    }
+  }
+
+
+Future<int> updatePlace(Place newPlace, String id)async{
+    print('updatePlace');
+   
+   dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
+
+      print('token: ${token}');
+      
+      // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
+      if (token != null) {
+        options.headers['x-access-token'] = token;
+      }
+      return handler.next(options);
+    },
+  ));
+
+    print("URL: $baseUrl/place/$id");
+    Response response = await dio.put('$baseUrl/place/$id', data: newPlace.toJson());
+
+    data = response.data.toString();
+    print('Data: $data');
+    statusCode = response.statusCode;
+    print('Status code: $statusCode');
+
+    if (statusCode == 201) {
+      print('201');
+      return 201;
+    } else if (statusCode == 400) {
+      print('400');
+      return 400;
+    } else if (statusCode == 500) {
+      print('500');
+      return 500;
+    } else {
+      print('-1');
+      return -1;
+    }
+  }
+
+
 Future<User> putUser(id,user) async {
   print('getData');
   // Interceptor para agregar el token a la cabecera 'x-access-token'

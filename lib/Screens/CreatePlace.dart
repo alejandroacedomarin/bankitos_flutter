@@ -1,3 +1,4 @@
+import 'package:bankitos_flutter/Screens/MyPlacesList.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
@@ -131,7 +132,7 @@ class CreatePostController extends GetxController {
             'Place creado correctamente',
             snackPosition: SnackPosition.BOTTOM,
           );
-          Get.to(() => NavigationMenu());
+          Get.to(() => PlaceListPage());
         }).catchError((error) {
           // Manejar errores de solicitud HTTP
           Get.snackbar(
