@@ -45,6 +45,7 @@ class Review {
       'stars': stars,
       'author': author,
       'review_deactivated': review_deactivated,
+      'place_id': place_id,
       'creation_date': creationDate.toIso8601String(),
       'modified_date': modifiedDate.toIso8601String(),
     };
