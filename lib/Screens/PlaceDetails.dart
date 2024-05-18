@@ -1,20 +1,32 @@
 import 'dart:convert';
 import 'package:bankitos_flutter/Screens/DeletePost.dart';
 import 'package:bankitos_flutter/Screens/UpdatePlace.dart';
+import 'package:bankitos_flutter/Screens/ViewReviewsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
+import 'package:bankitos_flutter/Models/ReviewModel.dart';
+import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
+import 'package:get_storage/get_storage.dart';
 import 'dart:io';
+
+
+late UserService userService;
 
 class PlaceDetailsPage extends StatelessWidget {
   final Place place;
 
   const PlaceDetailsPage(this.place, {Key? key}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
+    final box = GetStorage();
+    // Guardar el id en la caja
+    box.write('place_id', place.id);
+
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -72,6 +84,13 @@ class PlaceDetailsPage extends StatelessWidget {
                 _buildInfoBox('ID:', '${place.id}'),
                 const SizedBox(height: 40),
                 SignInButton(
+                  onPressed: () async {
+                  Get.to(ViewReviewsScreen());
+                  },
+                  text: 'View Reviews',
+                ),
+                const SizedBox(height: 20),
+                SignInButton(
                   onPressed: () {
                     Get.to(UpdatePostScreen(place: place));
                   },
@@ -84,6 +103,7 @@ class PlaceDetailsPage extends StatelessWidget {
                   },
                   text: 'Delete this Post',
                 ),
+                
               ],
             ),
           ),

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
 import 'package:bankitos_flutter/main.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
+import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:dio/dio.dart'; // Usa un prefijo 'Dio' para importar la clase Response desde Dio
 import 'package:get_storage/get_storage.dart';
 
@@ -28,6 +29,21 @@ class UserService {
   }
 
   String getUserId(){
+    final box = GetStorage();
+    if(box.read('id').isEmpty){
+      return '';
+    }
+    else{
+      return box.read('id');
+    }
+  }
+
+  void savePlaceId(String placeId){
+    final box = GetStorage();
+    box.write('id', placeId);
+  }
+
+  String getPlaceId(){
     final box = GetStorage();
     if(box.read('id').isEmpty){
       return '';
@@ -285,7 +301,6 @@ Future<User> putUser(id,user) async {
       return handler.next(options);
     },
   ));
-  
   try {
     
     print('URL: $baseUrl/placebyuser/$id');
@@ -297,6 +312,34 @@ Future<User> putUser(id,user) async {
     List<Place> places = responseData.map((data) => Place.fromJson(data)).toList();
   
     return places; // Devolver la lista de lugares
+  } catch (e) {
+    // Manejar cualquier error que pueda ocurrir durante la solicitud
+    print('Error fetching data: $e');
+    throw e; // Relanzar el error para que el llamador pueda manejarlo
+  }
+}
+
+  
+  Future<List<Review>> getReviewsById(String id) async {
+  print('getData');
+  // Interceptor para agregar el token a la cabecera 'x-access-token'
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken(); 
+      if(token != null){
+          options.headers['x-access-token'] = token;
+      }
+      return handler.next(options);
+    },
+  ));
+  try {
+    print('URL: $baseUrl/review/byPlace/$id');
+    var res = await dio.get('$baseUrl/review/byPlace/$id');
+    List<dynamic> responseData = res.data; // Obtener los datos de la respuesta
+    // Convertir los datos en una lista de objetos Place
+    List<Review> reviews = responseData.map((data) => Review.fromJson(data)).toList();
+    return reviews; // Devolver la lista de lugares
   } catch (e) {
     // Manejar cualquier error que pueda ocurrir durante la solicitud
     print('Error fetching data: $e');
@@ -359,5 +402,6 @@ Future<int> logIn(logIn) async {
       'password': logIn.password,
     };
   }
+
 
 }
