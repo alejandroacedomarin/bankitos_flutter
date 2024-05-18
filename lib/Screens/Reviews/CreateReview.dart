@@ -1,4 +1,4 @@
-import 'package:bankitos_flutter/Screens/Reviews/ViewReviewsScreen.dart';
+import 'package:bankitos_flutter/Screens/Reviews/ViewReviews.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';

@@ -1,4 +1,4 @@
-import 'package:bankitos_flutter/Screens/Reviews/ViewReviewsScreen.dart';
+import 'package:bankitos_flutter/Screens/Reviews/ViewReviews.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
@@ -130,7 +130,17 @@ class UpdateReviewController extends GetxController {
     // Obtén los nuevos valores del review del controlador de texto
     _existingReview.title = titleController.text;
     _existingReview.content = contentController.text;
+     try {
     _existingReview.stars = double.parse(starsController.text);
+    // Si la conversión tiene éxito, el código dentro de este bloque se ejecutará
+  } catch (e) {
+    print('Error al convertir el texto a double: $e');
+    Get.snackbar(
+      'Error',
+      'No has escrito un numero en el campo stars',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
 
   // Actualiza otros campos según sea necesario
 
@@ -151,7 +161,7 @@ class UpdateReviewController extends GetxController {
     // Manejar errores de solicitud HTTP
     Get.snackbar(
       'Error',
-      'Ha ocurrido un error al actualizar el review',
+      'No es un review tuyo',
       snackPosition: SnackPosition.BOTTOM,
     );
     print('Error al enviar review actualizado al backend: $error');

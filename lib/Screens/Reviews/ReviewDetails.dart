@@ -1,4 +1,4 @@
-//import 'package:bankitos_flutter/Screens/DeleteReview.dart';
+import 'package:bankitos_flutter/Screens/Reviews/DeleteReview.dart';
 import 'package:bankitos_flutter/Screens/Reviews/UpdateReview.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
@@ -59,7 +59,7 @@ class ReveiwDetailsPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 SignInButton(
                   onPressed: () {
-                    //Get.to(DeletePostScreen(place: place));
+                    Get.to(DeleteReviewScreen(review: review));
                   },
                   text: 'Delete this Review',
                 ),

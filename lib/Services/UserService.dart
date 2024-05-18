@@ -540,7 +540,45 @@ Future<int> createReview(Review newReview)async{
 
     if (statusCode == 200) {
       print('200');
-      return 201;
+      return 200;
+    } else if (statusCode == 400) {
+      print('400');
+      return 400;
+    } else if (statusCode == 500) {
+      print('500');
+      return 500;
+    } else {
+      print('-1');
+      return -1;
+    }
+  }
+
+  Future<int> deleteReview(String id)async{
+    print('deleteReview');
+   
+   dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
+      // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
+      if (token != null) {
+        options.headers['x-access-token'] = token;
+      }
+      return handler.next(options);
+    },
+  ));
+
+    print("URL: $baseUrl/review/$id");
+    Response response = await dio.delete('$baseUrl/review/$id');
+
+    data = response.data.toString();
+    print('Data: $data');
+    statusCode = response.statusCode;
+    print('Status code: $statusCode');
+
+    if (statusCode == 200) {
+      print('200');
+      return 200;
     } else if (statusCode == 400) {
       print('400');
       return 400;
