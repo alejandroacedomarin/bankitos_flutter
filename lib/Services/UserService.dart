@@ -161,8 +161,9 @@ Future<int> updatePlace(Place newPlace, String id)async{
   }
 
 
-Future<User> putUser(id,user) async {
+Future<User> putUser(user) async {
   print('getData');
+  var id = getUserId();
   // Interceptor para agregar el token a la cabecera 'x-access-token'
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) async {
@@ -209,15 +210,52 @@ Future<User> putUser(id,user) async {
   
   try {
     
-    var res = await dio.put('$baseUrl/review/$id', data: revtoJson(user));
+    var res = await dio.put('$baseUrl/users/$id', data: revtoJson(user));
     print(res.data);
     print('akiiiiiiiiiiiiiiiii');
-    User responseData = res.data; // Obtener los datos de la respuesta
+    User responseData = User.fromJson(res.data as Map<String, dynamic>); // Obtener los datos de la respuesta
   
     // Convertir los datos en una lista de objetos Place
     //List<Review> reviews = responseData.map((data) => Review.fromJson(data)).toList();
   
     return responseData; // Devolver la lista de lugares
+  } catch (e) {
+    // Manejar cualquier error que pueda ocurrir durante la solicitud
+    print('Error fetching data: $e');
+    throw e; // Relanzar el error para que el llamador pueda manejarlo
+  }
+  
+}
+Future<String> deleteUser() async {
+  
+  var id = getUserId();
+  // Interceptor para agregar el token a la cabecera 'x-access-token'
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
+
+      print(token);
+      
+      // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
+      if (token != null) {
+        options.headers['x-access-token'] = token;
+      }
+      return handler.next(options);
+    },
+  ));
+  
+  try {
+    
+    var res = await dio.delete('$baseUrl/users/$id');
+    
+    print('akiiiiiiiiiiiiiiiii');
+    var mesage = res.data.toString(); // Obtener los datos de la respuesta
+  
+    // Convertir los datos en una lista de objetos Place
+    //List<Review> reviews = responseData.map((data) => Review.fromJson(data)).toList();
+  
+    return mesage; // Devolver la lista de lugares
   } catch (e) {
     // Manejar cualquier error que pueda ocurrir durante la solicitud
     print('Error fetching data: $e');
@@ -359,5 +397,44 @@ Future<int> logIn(logIn) async {
       'password': logIn.password,
     };
   }
+
+
+  
+Future<User> getUser() async {
+  print('getData');
+  var id = getUserId();
+  // Interceptor para agregar el token a la cabecera 'x-access-token'
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
+
+      print(token);  
+
+      if(token != null){
+          
+          options.headers['x-access-token'] = token;
+      }
+      return handler.next(options);
+    },
+  ));
+  
+  try {
+    
+    print('URL: $baseUrl/users/$id');
+    var res = await dio.get('$baseUrl/users/$id');
+    
+     // Obtener los datos de la respuesta
+  
+    // Convertir los datos en una lista de objetos Place
+    User u = User.fromJson(res.data as Map<String, dynamic>);
+    print(u.email);
+    return u; // Devolver la lista de lugares
+  } catch (e) {
+    // Manejar cualquier error que pueda ocurrir durante la solicitud
+    print('Error fetching data: $e');
+    throw e; // Relanzar el error para que el llamador pueda manejarlo
+  }
+}
 
 }

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bankitos_flutter/Screens/Profile.dart';
+import 'package:bankitos_flutter/Screens/login_screen.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/utils/pickImage.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 
 
 late UserService userService;
+final box = GetStorage();
 
 void updateUser(User newUser) {
   GetStorage().write('user', newUser);
@@ -44,6 +46,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _currentPasswordController= TextEditingController();
   late TextEditingController _newPasswordController= TextEditingController();
   late TextEditingController _verifyPasswordController= TextEditingController();
+  final TextEditingController _deleteProfileController = TextEditingController();
   
   bool _isEditingPassword = false;
   @override
@@ -53,23 +56,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     
     // Inicializa los controladores con los valores actuales del usuario
-    _firstNameController = TextEditingController(text: widget.user.first_name);
+    _firstNameController = TextEditingController(text: widget.user?.first_name);
     _middleNameController =
-        TextEditingController(text: widget.user.middle_name);
-    _lastNameController = TextEditingController(text: widget.user.last_name);
-    _genderController = TextEditingController(text: widget.user.gender);
-    _emailController = TextEditingController(text: widget.user.email);
+        TextEditingController(text: widget.user?.middle_name);
+    _lastNameController = TextEditingController(text: widget.user?.last_name);
+    _genderController = TextEditingController(text: widget.user?.gender);
+    _emailController = TextEditingController(text: widget.user?.email);
     _phoneNumberController =
-        TextEditingController(text: widget.user.phone_number);
-    _birthDateController = TextEditingController(text: widget.user.birth_date);
-    _passwordController = TextEditingController(text: widget.user.password);
-    _photoController = TextEditingController(text: widget.user.photo);
+        TextEditingController(text: widget.user?.phone_number);
+    _birthDateController = TextEditingController(text: widget.user?.birth_date);
+    _passwordController = TextEditingController(text: widget.user?.password);
+    _photoController = TextEditingController(text: widget.user?.photo);
     _descriptionController =
-        TextEditingController(text: widget.user.description);
-    _dniController = TextEditingController(text: widget.user.dni);
+        TextEditingController(text: widget.user?.description);
+    _dniController = TextEditingController(text: widget.user?.dni);
     _personalityController =
-        TextEditingController(text: widget.user.personality);
-    _addressController = TextEditingController(text: widget.user.address);
+        TextEditingController(text: widget.user?.personality);
+    _addressController = TextEditingController(text: widget.user?.address);
   }
 
   @override
@@ -115,7 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 50.0,
-                        backgroundImage: widget.user.photo.isEmpty
+                        backgroundImage: widget.user!.photo.isEmpty
                             ? AssetImage('assets/userdefec.png')
                                 as ImageProvider<Object>?
                             : NetworkImage(_photoController.text),
@@ -150,6 +153,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     onPressed: _saveChanges,
                     child: Text('Save'),
                   ),
+                  SizedBox(height: 20.0),
+                  GestureDetector(
+                  onTap: _showDeleteProfileDialog,
+                  child: Text(
+                    'Delete Profile',
+                    style: TextStyle(color: Colors.red, fontSize: 16.0),
+                  ),
+                ),
                 ],
               ),
             ],
@@ -284,7 +295,7 @@ Widget _buildPasswordField(String label, TextEditingController controller) {
             Column(
               children: [
                  
-                _buildPasswordTextField('Current Password', _currentPasswordController),
+                //_buildPasswordTextField('Current Password', _currentPasswordController),
                 _buildPasswordTextField('New Password', _newPasswordController),
                 _buildPasswordTextField('Verify Password', _verifyPasswordController),
                 
@@ -334,37 +345,93 @@ Widget _buildPasswordField(String label, TextEditingController controller) {
       ),
     );
   }
-
+void _showDeleteProfileDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Eliminar perfil'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Para eliminar este perfil tienes que introducir:'),
+              Text('Eliminar perfil: ${widget.user.email}', style: TextStyle(fontWeight: FontWeight.bold)),
+              TextField(
+                controller: _deleteProfileController,
+                decoration: InputDecoration(
+                  labelText: 'Eliminar perfil: ${widget.user.email}',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (_deleteProfileController.text == 'Eliminar perfil: ${widget.user.email}') {
+                  deleteUser();
+                }
+              },
+              child: Text('Eliminar', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
   
-
+void deleteUser() async {
+    print('getUser');
+    try {
+      
+      String message = await userService.deleteUser();
+      Get.snackbar('Mensage',message,snackPosition: SnackPosition.BOTTOM,);
+      box.erase();
+      Get.offAll(() => LoginScreen());
+      
+      
+    } catch (error) {
+      Get.snackbar(
+        'Error',
+        'Vuelve a intentarlo',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      
+    }
+  }
   Future<void> _saveChanges() async {
     
     User updatedUser = User(
-      id: widget.user.id,
+      id: widget.user!.id,
       first_name: _firstNameController.text,
       middle_name: _middleNameController.text,
       last_name: _lastNameController.text,
       gender: _genderController.text,
-      role: widget.user.role,
+      role: widget.user!.role,
       email: _emailController.text,
       phone_number: _phoneNumberController.text,
       birth_date: _birthDateController.text,
       // Inicializa algunos parámetros con valores predeterminados
-      password: _passwordController.text,
-      places: widget.user.places,
-      reviews: widget.user.reviews,
-      conversations: widget.user.conversations,
-      user_rating: widget.user.user_rating,
+      password: _verifyPasswordController.text,
+      places: widget.user!.places,
+      reviews: widget.user!.reviews,
+      conversations: widget.user!.conversations,
+      user_rating: widget.user!.user_rating,
       photo: _photoController.text,
       description: _descriptionController.text,
       dni: _dniController.text,
       personality: _personalityController.text,
       address: _addressController.text,
-      housing_offered: widget.user.housing_offered,
-      emergency_contact: widget.user.emergency_contact,
-      user_deactivated: widget.user.user_deactivated,
-      creation_date: widget.user.creation_date,
-      modified_date: widget.user.modified_date,
+      housing_offered: widget.user!.housing_offered,
+      emergency_contact: widget.user!.emergency_contact,
+      user_deactivated: widget.user!.user_deactivated,
+      creation_date: widget.user!.creation_date,
+      modified_date: widget.user!.modified_date,
     );
     
     // Actualiza el usuario en el controlador, si fuera necesario
@@ -374,9 +441,13 @@ Widget _buildPasswordField(String label, TextEditingController controller) {
     
     
     try {
-      await userService.putUser(updatedUser.id, updatedUser).then((value) => {updateUser(updatedUser),Navigator.pop(context)});
+      await userService.putUser(updatedUser).then((value) => {Navigator.pop(context)});
     } catch (error) {
-      print('Error al comunicarse con el backend: $error');
+      Get.snackbar(
+        'Error',
+        error.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
   // Actualiza el usuario en el controlador

@@ -29,7 +29,7 @@ class NavigationMenu extends StatelessWidget {
 
           NavigationDestination(icon: Icon(Iconsax.home), label: 'Home'),
 
-          NavigationDestination(icon: Icon(Iconsax.activity), label: '?'),
+          NavigationDestination(icon: Icon(Iconsax.search_normal1), label: 'Search'),
 
           NavigationDestination(icon: Icon(Iconsax.house), label: 'Mis Places'),
 
