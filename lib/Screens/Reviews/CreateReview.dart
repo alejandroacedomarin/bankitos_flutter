@@ -23,10 +23,6 @@ class _CreateReviewScreen extends State<CreateReviewScreen> {
   void initState(){
     super.initState();
     userService = UserService();
-    String id = userService.getUserId();
-    final box = GetStorage();
-    // Obtener el id guardado de la caja
-    final placeId = box.read('place_id');
   }
 
   @override 
