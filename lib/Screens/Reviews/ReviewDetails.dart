@@ -1,10 +1,11 @@
 //import 'package:bankitos_flutter/Screens/DeleteReview.dart';
-//import 'package:bankitos_flutter/Screens/Reviews/UpdateReview.dart';
+import 'package:bankitos_flutter/Screens/Reviews/UpdateReview.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
 
 late UserService userService;
 
@@ -51,16 +52,16 @@ class ReveiwDetailsPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 SignInButton(
                   onPressed: () {
-                    //Get.to(UpdatePostScreen(place: place));
+                    Get.to(UpdateReviewScreen(review: review));
                   },
-                  text: 'Update this Post',
+                  text: 'Update this Review',
                 ),
                 const SizedBox(height: 20),
                 SignInButton(
                   onPressed: () {
                     //Get.to(DeletePostScreen(place: place));
                   },
-                  text: 'Delete this Post',
+                  text: 'Delete this Review',
                 ),
                 
               ],
