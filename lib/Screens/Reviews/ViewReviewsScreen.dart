@@ -1,14 +1,11 @@
-import 'dart:convert';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
-import 'package:bankitos_flutter/Screens/CreatePlace.dart';
+import 'package:bankitos_flutter/Screens/Reviews/CreateReview.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
-import 'package:bankitos_flutter/Widgets/post copy.dart';
-import 'package:http/http.dart' as http;
+import 'package:bankitos_flutter/Widgets/ReviewWidgets/ReviewButton.dart';
 import 'package:get/get.dart';
-import 'package:dio/dio.dart' ;
 import 'package:get_storage/get_storage.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 
@@ -103,7 +100,7 @@ Widget build(BuildContext context) {
               ),
               SignInButton(
                 onPressed: (){ 
-                  Get.to(CreatePostScreen());
+                  Get.to(CreateReviewScreen());
                 },
                 text: '¡Create a Review!'
               ),

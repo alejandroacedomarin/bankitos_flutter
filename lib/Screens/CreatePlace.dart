@@ -1,12 +1,9 @@
 import 'package:bankitos_flutter/Screens/MyPlacesList.dart';
-import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
-import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
-import 'package:bankitos_flutter/Resources/pallete.dart';
 import 'package:get/get.dart';
 
 late UserService userService;

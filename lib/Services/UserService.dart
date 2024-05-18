@@ -478,4 +478,40 @@ Future<User> getUser() async {
   }
 }
 
+Future<int> createReview(Review newReview)async{
+    print('createReview');
+   
+   dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
+
+      if(token != null){
+          options.headers['x-access-token'] = token;
+      }
+      // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
+      return handler.next(options);
+    },
+  ));
+
+    print('URL: $baseUrl/review');
+    Response response = await dio.post('$baseUrl/review', data: newReview.toJson());
+    data = response.data.toString();
+    print('Response: $data');
+    statusCode = response.statusCode;
+
+    if (statusCode == 201) {
+      print('201');
+      return 201;
+    } else if (statusCode == 400) {
+      print('400');
+      return 400;
+    } else if (statusCode == 500) {
+      print('500');
+      return 500;
+    } else {
+      print('-1');
+      return -1;
+    }
+  }
 }
