@@ -106,6 +106,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Edit Profile'),
+          backgroundColor: Colors.orange,
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -151,8 +152,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   SizedBox(height: 20.0),
                   ElevatedButton(
                     onPressed: _saveChanges,
-                    child: Text('Save'),
-                  ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.black,
+                     ),
+                     child: Text('Save'),
+                    ),
                   SizedBox(height: 20.0),
                   GestureDetector(
                   onTap: _showDeleteProfileDialog,
@@ -251,7 +256,7 @@ Widget _buildOption(String option, TextEditingController controller, VoidCallbac
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       margin: EdgeInsets.only(right: 10),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.blue : null,
+        color: isSelected ? Colors.orange : null,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -284,9 +289,9 @@ Widget _buildPasswordField(String label, TextEditingController controller) {
               IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () {
-                  setState(() {
+                  /* setState(() {
                     _isEditingPassword = !_isEditingPassword;
-                  });
+                  }); */
                 },
               ),
             ],

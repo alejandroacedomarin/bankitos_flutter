@@ -14,6 +14,7 @@ const UserDetails(this.user, {Key? key}) : super(key: key);
     return Scaffold(
       appBar: AppBar(
         title: Text('User Details'),
+        backgroundColor: Colors.orange,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),

@@ -20,7 +20,13 @@ class PlaceWidget extends StatelessWidget {
                       : NetworkImage(place.photo), // URL de la foto si está disponible
         ),
         title: Text(place.title),
-        subtitle: Text(place.rating.toString()),
+        subtitle: Row(
+    children: [
+      Icon(Icons.star, color: Colors.yellow), // Yellow star icon
+      SizedBox(width: 4.0), // Space between the icon and text
+      Text(place.rating.toString()),
+    ],
+  ),
         onTap: () {
           //Get.to(() => PlaceDetails(user));
         },

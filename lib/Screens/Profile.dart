@@ -54,6 +54,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
+        backgroundColor:Colors.orange,
         actions: [
           IconButton(
             icon: Icon(Icons.edit),
