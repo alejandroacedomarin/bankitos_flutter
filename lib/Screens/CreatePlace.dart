@@ -57,8 +57,6 @@ class _CreatePostScreen extends State<CreatePostScreen> {
               const SizedBox(height: 15),
               ParamTextBox(controller: controller.contentController, text: 'Contenido'),
               const SizedBox(height: 15),
-               ParamTextBox(controller: controller.autorController, text: 'ID del autor'),
-              const SizedBox(height: 15),
               ParamTextBox(controller: controller.imageController, text: 'Url de la imágen'),
               const SizedBox(height: 15),
                ParamTextBox(controller: controller.addressController, text: 'Dirección'),
@@ -78,7 +76,6 @@ class CreatePostController extends GetxController {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController imageController = TextEditingController();
-  final TextEditingController autorController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
 
   
@@ -88,7 +85,9 @@ class CreatePostController extends GetxController {
 
 
   void createPost() {
-    if(titleController.text.isEmpty || contentController.text.isEmpty || imageController.text.isEmpty || autorController.text.isEmpty || addressController.text.isEmpty){
+  String id = userService.getUserId();
+
+    if(titleController.text.isEmpty || contentController.text.isEmpty || imageController.text.isEmpty || addressController.text.isEmpty){
       Get.snackbar(
         'Error', 
         'Campos vacios',
@@ -100,7 +99,7 @@ class CreatePostController extends GetxController {
           title: titleController.text,
           content: contentController.text,
           photo: imageController.text,
-          authorId: autorController.text,
+          authorId: id,
           rating: 1,
           latitude: 1,
           longitude: 1,
