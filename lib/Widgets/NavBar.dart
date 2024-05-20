@@ -1,4 +1,5 @@
 import 'package:bankitos_flutter/Screens/MyPlacesList.dart';
+import 'package:bankitos_flutter/Screens/Search.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -49,6 +50,6 @@ class NavigationController extends GetxController{
 
   final Rx<int> selectedIndex = 0.obs;
 
-  final screens = [Container(color: Colors.green),Container(color: Colors.orange), PlaceListPage(), UserProfileScreen()];
+  final screens = [Container(color: Colors.green),SearchScreen(), PlaceListPage(), UserProfileScreen()];
 
 }
