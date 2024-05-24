@@ -1,41 +1,50 @@
-import 'dart:convert';
-import 'package:bankitos_flutter/Models/PlaceModel.dart';
-import 'package:bankitos_flutter/main.dart';
-import 'package:bankitos_flutter/Models/UserModel.dart';
-import 'package:bankitos_flutter/Models/ReviewModel.dart';
-import 'package:dio/dio.dart'; // Usa un prefijo 'Dio' para importar la clase Response desde Dio
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_storage/get_storage.dart';
-
+import 'package:bankitos_flutter/Models/ReviewModel.dart';
+import 'package:bankitos_flutter/Models/PlaceModel.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:bankitos_flutter/Models/UserModel.dart' as U;
 
 class UserService {
-  final String baseUrl = "http://localhost:3000"; // URL de tu backend
-  final Dio dio = Dio(); // Usa el prefijo 'Dio' para referenciar la clase Dio
+  final String baseUrl = "http://localhost:3000";
+  final Dio dio = Dio();
   var statusCode;
   var data;
+  //final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  void saveToken(String token){
+  UserService() {
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final token = getToken();
+        if (token != null) {
+          options.headers['x-access-token'] = token;
+        }
+        return handler.next(options);
+      },
+    ));
+  }
+
+  void saveToken(String token) {
     final box = GetStorage();
     box.write('token', token);
   }
 
-  String? getToken(){
+  String? getToken() {
     final box = GetStorage();
     return box.read('token');
   }
 
-  void saveUserId(String id){
+  void saveUserId(String id) {
     final box = GetStorage();
     box.write('id', id);
   }
 
-  String getUserId(){
+  String getUserId() {
     final box = GetStorage();
-    if(box.read('id').isEmpty){
-      return '';
-    }
-    else{
-      return box.read('id');
-    }
+    return box.read('id') ?? '';
   }
 
   void savePlaceId(String placeId){
@@ -52,8 +61,10 @@ class UserService {
       return box.read('id');
     }
   }
+
+
   //Función createUser
-  Future<int> createUser(User newUser)async{
+  Future<int> createUser(U.User newUser)async{
     print('createUser');
     print('try');
     //Aquí llamamos a la función request
@@ -135,6 +146,7 @@ Future<int> deletePlace(String id)async{
   }
 
 
+
 Future<int> updatePlace(Place newPlace, String id)async{
     print('updatePlace');
    
@@ -177,7 +189,7 @@ Future<int> updatePlace(Place newPlace, String id)async{
   }
 
 
-Future<User> putUser(user) async {
+Future<U.User> putUser(user) async {
   print('getData');
   var id = getUserId();
   // Interceptor para agregar el token a la cabecera 'x-access-token'
@@ -229,7 +241,7 @@ Future<User> putUser(user) async {
     var res = await dio.put('$baseUrl/users/$id', data: revtoJson(user));
     print(res.data);
     print('akiiiiiiiiiiiiiiiii');
-    User responseData = User.fromJson(res.data as Map<String, dynamic>); // Obtener los datos de la respuesta
+    U.User responseData = U.User.fromJson(res.data as Map<String, dynamic>); // Obtener los datos de la respuesta
   
     // Convertir los datos en una lista de objetos Place
     //List<Review> reviews = responseData.map((data) => Review.fromJson(data)).toList();
@@ -441,7 +453,58 @@ Future<int> logIn(logIn) async {
     };
   }
 
-Future<User> getUser() async {
+Map<String, dynamic> logInToJsonWithGoogle(token, mail) {
+    return {
+      'email': mail,
+      'token': token,
+    };
+  }
+  Future<int> logInWithGoogle(String token, String email) async {
+  print('LogInWithGoogle');
+
+  print(email);
+
+  String token1 = token;
+  String email1 = email;
+  
+  
+  //print(logInWithGoogle(token1, email1));
+
+
+  // Realizamos la solicitud POST al backend
+  try {
+    print('URL: $baseUrl/loginWithGoogle');
+    Response response = await dio.post('$baseUrl/loginWithGoogle', data: logInWithGoogle(token1, email1));
+    
+    // Procesamos la respuesta del servidor
+    Map<String, dynamic> data = response.data;
+    print('Data: $data');
+    
+    // Obtener el token y userId del mapa
+    String token = data['token'];
+    String userId = data['_id'];
+    
+    print('Token: $token');
+    print('ID: $userId');
+    
+    // Guardar el token y userId por separado
+    saveToken(token);
+    saveUserId(userId); 
+
+    // Printeamos el status code recibido por el backend
+    int statusCode = response.statusCode!;
+    print('Status code: $statusCode');
+
+    // Retornamos el código de estado recibido del servidor
+    return statusCode;
+  } catch (e) {
+    // Manejamos cualquier error que pueda ocurrir durante la solicitud
+    print('Error: $e');
+    return -1; // Retornamos un código de error genérico en caso de falla
+  }
+}
+
+Future<U.User> getUser() async {
   print('getData');
   var id = getUserId();
   // Interceptor para agregar el token a la cabecera 'x-access-token'
@@ -468,7 +531,7 @@ Future<User> getUser() async {
      // Obtener los datos de la respuesta
   
     // Convertir los datos en una lista de objetos Place
-    User u = User.fromJson(res.data as Map<String, dynamic>);
+    U.User u = U.User.fromJson(res.data as Map<String, dynamic>);
     print(u.email);
     return u; // Devolver la lista de lugares
   } catch (e) {
@@ -477,7 +540,7 @@ Future<User> getUser() async {
     throw e; // Relanzar el error para que el llamador pueda manejarlo
   }
 }
-Future<User> getSearchedUser(String id) async {
+Future<U.User> getSearchedUser(String id) async {
   print('getData');
   
   // Interceptor para agregar el token a la cabecera 'x-access-token'
@@ -504,7 +567,7 @@ Future<User> getSearchedUser(String id) async {
      // Obtener los datos de la respuesta
   
     // Convertir los datos en una lista de objetos Place
-    User u = User.fromJson(res.data as Map<String, dynamic>);
+    U.User u = U.User.fromJson(res.data as Map<String, dynamic>);
     print(u.email);
     return u; // Devolver la lista de lugares
   } catch (e) {
@@ -588,7 +651,7 @@ Future<int> createReview(Review newReview)async{
       return -1;
     }
   }
-Future<List<User>> getUsers() async {
+Future<List<U.User>> getUsers() async {
   print('getData');
   // Interceptor para agregar el token a la cabecera 'x-access-token'
   dio.interceptors.add(InterceptorsWrapper(
@@ -611,7 +674,7 @@ Future<List<User>> getUsers() async {
     List<dynamic> responseData = res.data; // Obtener los datos de la respuesta
   
     // Convertir los datos en una lista de objetos Place
-    List<User> users = responseData.map((data) => User.fromJson(data)).toList();
+    List<U.User> users = responseData.map((data) => U.User.fromJson(data)).toList();
   
     return users; // Devolver la lista de lugares
   } catch (e) {

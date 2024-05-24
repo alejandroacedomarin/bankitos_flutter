@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:bankitos_flutter/Screens/google.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
@@ -153,6 +154,46 @@ class _LoginScreen extends State<LoginScreen> {
                           SignInButton(
                             onPressed: () => controller.logIn(),
                             text: 'Log In',
+                          ),
+                          SizedBox(height: 30),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withOpacity(0.7), // Color de fondo con opacidad
+                              borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                            ),
+                            child: const Text(
+                              'Or Sign In with',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          InkWell(
+                            onTap: () {
+                              Get.to(() => SignInDemo());
+                              // Aquí puedes definir lo que quieres que suceda cuando se presione la imagen
+                              print('Botón de Google presionado');
+                              // Por ejemplo, puedes iniciar sesión con Google o realizar alguna otra acción
+                            },
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.transparent,
+                              ),
+                              child: Center(
+                                child: Image.asset(
+                                  'assets/logoGoogle.jpg', // Imagen superpuesta
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
