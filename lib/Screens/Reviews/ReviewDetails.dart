@@ -33,6 +33,7 @@ class ReveiwDetailsPage extends StatelessWidget {
           ),
         ),
         backgroundColor: Colors.orange,
+        
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(
