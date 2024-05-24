@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:bankitos_flutter/Screens/EditProfile.dart';
+import 'package:bankitos_flutter/Screens/Mapa.dart';
 
 void main() {
   
@@ -17,8 +18,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: LoginScreen(),
-      //home: SearchScreen(),
+      //home: LoginScreen(),
+      home: NavigationMenu(),
     );
   }
 }

@@ -55,6 +55,7 @@ class Place {
       modifiedDate: json['modified_date'] != null ? DateTime.parse(json['modified_date']) : DateTime.now(), // Parsea la fecha a DateTime si está presente, de lo contrario usa la fecha actual
     );
   }
+  
 
    Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {

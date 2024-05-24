@@ -1,16 +1,1 @@
-# bankitos_flutter
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Minimo 2: En este minimo el problema principal que he tenido es que no se conectaba bien con el servidor, este error que salia es nuevo, probando en web va perfecto, pero ya habia desarrollado todo el codigo del mapa para android. La funcion de coger los places del servidor esta hecha, al funcionar la conexion tendria que ir. Para probar si las funcionalidades del mapa iban, al llamar a la funcion que se deberia de conectar con el servidor y darte una lista de places he creado una lista manualmente que esta comentada, esta te da todos los places y en la pantalla de mapa pasan a ser un marcador que al clicar se ve su informacion.

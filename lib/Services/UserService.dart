@@ -8,7 +8,7 @@ import 'package:get_storage/get_storage.dart';
 
 
 class UserService {
-  final String baseUrl = "http://localhost:3000"; // URL de tu backend
+  final String baseUrl = "http://127.0.0.1:3000"; // URL de tu backend
   final Dio dio = Dio(); // Usa el prefijo 'Dio' para referenciar la clase Dio
   var statusCode;
   var data;
@@ -357,7 +357,145 @@ Future<String> deleteUser() async {
   }
 }
 
+  Future<List<Place>> getMarcadores() async{
+  print('getData');
+  // Interceptor para agregar el token a la cabecera 'x-access-token'
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      // Obtener el token guardado
+      final token = getToken();
+
+      print(token);  
+
+      if(token != null){
+          
+          options.headers['x-access-token'] = token;
+      }
+      return handler.next(options);
+    },
+  ));
+  try {
+    /* return [
+    Place(
+      id: '1',
+      title: 'Banco',
+      content: 'Hermoso banco para relajarse',
+      authorId: 'user1',
+      rating: 4.5,
+      latitude: 41.2756,
+      longitude: 1.9869,
+      photo: 'parque_central.jpg',
+      isBankito: false,
+      isPublic: true,
+      isCovered: false,
+      schedule: {
+        'Monday': '8:00 AM - 6:00 PM',
+        'Tuesday': '8:00 AM - 6:00 PM',
+        'Wednesday': '8:00 AM - 6:00 PM',
+        'Thursday': '8:00 AM - 6:00 PM',
+        'Friday': '8:00 AM - 6:00 PM',
+        'Saturday': '8:00 AM - 12:00 PM',
+        'Sunday': 'Closed',
+      },
+      address: 'Avenida del Parque, 123',
+      placeDeactivated: false,
+      creationDate: DateTime.now(),
+      modifiedDate: DateTime.now(),
+    ),
+    Place(
+      id: '2',
+      title: 'Fuente',
+      content: 'Fuente con hermosa vista',
+      authorId: 'user2',
+      rating: 4.2,
+      latitude: 41.2758,
+      longitude: 1.9871,
+      photo: 'restaurante_la_terraza.jpg',
+      isBankito: false,
+      isPublic: true,
+      isCovered: true,
+      schedule: {
+        'Monday': '11:00 AM - 10:00 PM',
+        'Tuesday': '11:00 AM - 10:00 PM',
+        'Wednesday': '11:00 AM - 10:00 PM',
+        'Thursday': '11:00 AM - 10:00 PM',
+        'Friday': '11:00 AM - 11:00 PM',
+        'Saturday': '11:00 AM - 11:00 PM',
+        'Sunday': '11:00 AM - 4:00 PM',
+      },
+      address: 'Carrer del Mar, 45',
+      placeDeactivated: false,
+      creationDate: DateTime.now(),
+      modifiedDate: DateTime.now(),
+    ),
+    Place(
+      id: '3',
+      title: 'Piknik',
+      content: 'Lugar tranquilo para leer , estudiar y comer',
+      authorId: 'user3',
+      rating: 4.8,
+      latitude: 41.2755,
+      longitude: 1.9867,
+      photo: 'biblioteca_municipal.jpg',
+      isBankito: false,
+      isPublic: true,
+      isCovered: true,
+      schedule: {
+        'Monday': '9:00 AM - 8:00 PM',
+        'Tuesday': '9:00 AM - 8:00 PM',
+        'Wednesday': '9:00 AM - 8:00 PM',
+        'Thursday': '9:00 AM - 8:00 PM',
+        'Friday': '9:00 AM - 8:00 PM',
+        'Saturday': '9:00 AM - 1:00 PM',
+        'Sunday': 'Closed',
+      },
+      address: 'Plaça de la Llibertat, 7',
+      placeDeactivated: false,
+      creationDate: DateTime.now(),
+      modifiedDate: DateTime.now(),
+    ),
+    Place(
+      id: '4',
+      title: 'Banco',
+      content: 'Hermoso banco junto al mar',
+      authorId: 'user4',
+      rating: 4.6,
+      latitude: 41.2762,
+      longitude: 1.9865,
+      photo: 'paseo_maritimo.jpg',
+      isBankito: false,
+      isPublic: true,
+      isCovered: false,
+      schedule: {
+        'Monday': 'Open 24 Hours',
+        'Tuesday': 'Open 24 Hours',
+        'Wednesday': 'Open 24 Hours',
+        'Thursday': 'Open 24 Hours',
+        'Friday': 'Open 24 Hours',
+        'Saturday': 'Open 24 Hours',
+        'Sunday': 'Open 24 Hours',
+      },
+      address: 'Passeig Marítim, 1',
+      placeDeactivated: false,
+      creationDate: DateTime.now(),
+      modifiedDate: DateTime.now(),
+    ),
+  ]; */
+    print('URL: $baseUrl/place');
+    var res = await dio.get('$baseUrl/place');
+    
+    List<dynamic> responseData = res.data; // Obtener los datos de la respuesta
   
+    // Convertir los datos en una lista de objetos Place
+    List<Place> places = responseData.map((data) => Place.fromJson(data)).toList();
+  
+    return places; // Devolver la lista de lugares
+  } catch (e) {
+    
+    print('Error fetching data: $e');
+    throw e; // Relanzar el error para que el llamador pueda manejarlo
+  }
+}
   Future<List<Review>> getReviewsById(String id) async {
   print('getData');
   // Interceptor para agregar el token a la cabecera 'x-access-token'
@@ -477,6 +615,7 @@ Future<User> getUser() async {
     throw e; // Relanzar el error para que el llamador pueda manejarlo
   }
 }
+
 Future<User> getSearchedUser(String id) async {
   print('getData');
   
