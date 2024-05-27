@@ -62,6 +62,94 @@ class UserService {
     }
   }
 
+   Future<int> logIn(logIn) async {
+    print('LogIn');
+    
+    print('URL: $baseUrl/login');
+    print(logInToJson(logIn));
+    
+    Response response = await dio.post('$baseUrl/login', data: logInToJson(logIn));
+    Map<String, dynamic> data = response.data;
+    print('Data: $data');
+
+    String token = data['token'];
+    String userId = data['_id'];
+
+    print('Token: $token');
+    print('ID: $userId');
+
+    saveToken(token);
+    saveUserId(userId); 
+
+    int statusCode = response.statusCode!;
+    print('Status code: $statusCode');
+
+    return statusCode;
+  }
+
+  Future<int> logInWithGoogle(String token, String email) async {
+    print('LogInWithGoogle');
+
+    print(email);
+
+    String token1 = token;
+    String email1 = email;
+
+    try {
+      print('URL: $baseUrl/loginWithGoogle');
+      Response response = await dio.post('$baseUrl/loginWithGoogle', data: logInToJsonWithGoogle(token1, email1));
+      
+      Map<String, dynamic> data = response.data;
+      print('Data: $data');
+      
+      String token = data['token'];
+      String userId = data['_id'];
+      
+      print('Token: $token');
+      print('ID: $userId');
+      
+      saveToken(token);
+      saveUserId(userId); 
+
+      int statusCode = response.statusCode!;
+      print('Status code: $statusCode');
+
+      return statusCode;
+    } catch (e) {
+      print('Error: $e');
+      return -1;
+    }
+  }
+
+  Future<U.User> getUser() async {
+    print('getData');
+    var id = getUserId();
+    try {
+      print('URL: $baseUrl/users/$id');
+      var res = await dio.get('$baseUrl/users/$id');
+      U.User u = U.User.fromJson(res.data as Map<String, dynamic>);
+      print(u.email);
+      return u;
+    } catch (e) {
+      print('Error fetching data: $e');
+      throw e;
+    }
+  }
+
+  Map<String, dynamic> logInToJson(logIn) {
+    return {
+      'email': logIn.email,
+      'password': logIn.password,
+    };
+  }
+
+  Map<String, dynamic> logInToJsonWithGoogle(String token, String email) {
+    return {
+      'email': email,
+      'token': token,
+    };
+  }
+
 
   //Función createUser
   Future<int> createUser(U.User newUser)async{
@@ -397,149 +485,6 @@ Future<String> deleteUser() async {
   }
 }
 
-Future<int> logIn(logIn) async {
-    print('LogIn');
-    
-    // Aquí llamamos a la función request
-    print('URL: $baseUrl/login');
-    print(logInToJson(logIn));
-    
-    Response response = await dio.post('$baseUrl/login', data: logInToJson(logIn));
-    // En response guardamos lo que recibimos como respuesta
-    // Printeamos los datos recibidos
-
-    // Asegúrate de que response.data es un mapa decodificado
-    Map<String, dynamic> data = response.data;
-    print('Data: $data');
-
-    // Obtener el token y userId del mapa
-    String token = data['token'];
-    String userId = data['_id'];
-
-    print('Token: $token');
-    print('ID: $userId');
-
-    // Guardar el token y userId por separado
-    saveToken(token);
-    saveUserId(userId); 
-
-    // Printeamos el status code recibido por el backend
-    int statusCode = response.statusCode!;
-    print('Status code: $statusCode');
-
-    if (statusCode == 200) {
-      // Si el usuario se crea correctamente, retornamos el código 201
-      print('200');
-      return 201;
-    } else if (statusCode == 400) {
-      // Si hay campos faltantes, retornamos el código 400
-      print('400');
-      return 400;
-    } else if (statusCode == 500) {
-      // Si hay un error interno del servidor, retornamos el código 500
-      print('500');
-      return 500;
-    } else {
-      // Otro caso no manejado
-      print('-1');
-      return -1;
-    }
-  }
-
-  Map<String, dynamic> logInToJson(logIn) {
-    return {
-      'email': logIn.email,
-      'password': logIn.password,
-    };
-  }
-
-Map<String, dynamic> logInToJsonWithGoogle(token, mail) {
-    return {
-      'email': mail,
-      'token': token,
-    };
-  }
-  Future<int> logInWithGoogle(String token, String email) async {
-  print('LogInWithGoogle');
-
-  print(email);
-
-  String token1 = token;
-  String email1 = email;
-  
-  
-  //print(logInWithGoogle(token1, email1));
-
-
-  // Realizamos la solicitud POST al backend
-  try {
-    print('URL: $baseUrl/loginWithGoogle');
-    Response response = await dio.post('$baseUrl/loginWithGoogle', data: logInWithGoogle(token1, email1));
-    
-    // Procesamos la respuesta del servidor
-    Map<String, dynamic> data = response.data;
-    print('Data: $data');
-    
-    // Obtener el token y userId del mapa
-    String token = data['token'];
-    String userId = data['_id'];
-    
-    print('Token: $token');
-    print('ID: $userId');
-    
-    // Guardar el token y userId por separado
-    saveToken(token);
-    saveUserId(userId); 
-
-    // Printeamos el status code recibido por el backend
-    int statusCode = response.statusCode!;
-    print('Status code: $statusCode');
-
-    // Retornamos el código de estado recibido del servidor
-    return statusCode;
-  } catch (e) {
-    // Manejamos cualquier error que pueda ocurrir durante la solicitud
-    print('Error: $e');
-    return -1; // Retornamos un código de error genérico en caso de falla
-  }
-}
-
-Future<U.User> getUser() async {
-  print('getData');
-  var id = getUserId();
-  // Interceptor para agregar el token a la cabecera 'x-access-token'
-  dio.interceptors.add(InterceptorsWrapper(
-    onRequest: (options, handler) async {
-      // Obtener el token guardado
-      final token = getToken();
-
-      print(token);  
-
-      if(token != null){
-          
-          options.headers['x-access-token'] = token;
-      }
-      return handler.next(options);
-    },
-  ));
-  
-  try {
-    
-    print('URL: $baseUrl/users/$id');
-    var res = await dio.get('$baseUrl/users/$id');
-    
-     // Obtener los datos de la respuesta
-  
-    // Convertir los datos en una lista de objetos Place
-    U.User u = U.User.fromJson(res.data as Map<String, dynamic>);
-    print(u.email);
-    return u; // Devolver la lista de lugares
-  } catch (e) {
-    // Manejar cualquier error que pueda ocurrir durante la solicitud
-    print('Error fetching data: $e');
-    throw e; // Relanzar el error para que el llamador pueda manejarlo
-  }
-}
 Future<U.User> getSearchedUser(String id) async {
   print('getData');
   

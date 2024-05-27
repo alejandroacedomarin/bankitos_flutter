@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:convert' show json;
 import 'dart:ui';
-
-import 'package:bankitos_flutter/Screens/google.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import '../id.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Screens/register_screen.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
@@ -13,6 +18,16 @@ import 'package:get/get.dart';
 
 late UserService userService;
 
+const List<String> scopes = <String>[
+  'email',
+  'https://www.googleapis.com/auth/contacts.readonly',
+];
+
+GoogleSignIn _googleSignIn = GoogleSignIn(
+  clientId: googleClientId,
+  scopes: scopes,
+);
+
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
 
@@ -22,12 +37,142 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreen extends State<LoginScreen> {
   final Controller controller = Get.put(Controller());
+  GoogleSignInAccount? _currentUser;
+  bool _isAuthorized = false; 
+  String _contactText = '';
+  String mail = '';
+  String Token = '';
+  int i = 0;
 
   @override
   void initState() {
     super.initState();
     userService = UserService();
+
+    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) async {
+      bool isAuthorized = account != null;
+      if (kIsWeb && account != null) {
+        isAuthorized = await _googleSignIn.canAccessScopes(scopes);
+      }
+      setState(() {
+        _currentUser = account;
+        _isAuthorized = isAuthorized;
+      });
+
+      if (isAuthorized) {
+        unawaited(_handleGetContact(account!));
+      }
+    });
+    _googleSignIn.signInSilently();
   }
+
+  Future<void> _handleGetContact(GoogleSignInAccount user) async {
+    setState(() {
+      _contactText = 'Loading contact info...';
+    });
+    
+    final http.Response response = await http.get(
+      Uri.parse('https://people.googleapis.com/v1/people/me/connections'
+          '?requestMask.includeField=person.names'),
+      headers: await user.authHeaders,
+    );
+    if (response.statusCode != 200) {
+      setState(() {
+        _contactText = 'People API gave a ${response.statusCode} '
+            'response. Check logs for details.';
+      });
+      print('People API ${response.statusCode} response: ${response.body}');
+      return;
+    }
+    final Map<String, dynamic> data =
+        json.decode(response.body) as Map<String, dynamic>;
+    final String? namedContact = _pickFirstNamedContact(data);
+    setState(() {
+      if (namedContact != null) {
+        _contactText = 'I see you know $namedContact!';
+      } else {
+        _contactText = 'No contacts to display.';
+      }
+    });
+  }
+
+  String? _pickFirstNamedContact(Map<String, dynamic> data) {
+    final List<dynamic>? connections = data['connections'] as List<dynamic>?;
+    final Map<String, dynamic>? contact = connections?.firstWhere(
+      (dynamic contact) => (contact as Map<Object?, dynamic>)['names'] != null,
+      orElse: () => null,
+    ) as Map<String, dynamic>?;
+    if (contact != null) {
+      final List<dynamic> names = contact['names'] as List<dynamic>;
+      final Map<String, dynamic>? name = names.firstWhere(
+        (dynamic name) =>
+            (name as Map<Object?, dynamic>)['displayName'] != null,
+        orElse: () => null,
+      ) as Map<String, dynamic>?;
+      if (name != null) {
+        return name['displayName'] as String?;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _handleSignIn() async {
+    if(i == 1){
+      try {
+        i = 0;
+        final GoogleSignInAccount? account = await _googleSignIn.signIn();
+        if (account != null) {
+          final GoogleSignInAuthentication authentication = await account.authentication;
+
+          final String accessToken = authentication.accessToken!;
+          final String email = account.email;
+          
+          print('Access Token: $accessToken');
+          print('Email: $email');
+          
+          mail = email;
+          Token = accessToken;
+
+          print('Access Token 2: $Token');
+          print('Email 2: $mail');
+
+          int response = await userService.logInWithGoogle(Token, mail);
+
+          if(response == -1){
+            Get.snackbar(
+            'Error',
+            'An error with Log In occured, please, try again later',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          }
+          else{
+            Get.snackbar(
+            'Log In Successful',
+            'Log In Successful',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          Get.to(() => NavigationMenu());
+          }
+          } else {
+          print('Inicio de sesión cancelado por el usuario.');
+        }
+      } catch (error) {
+        print('Error al iniciar sesión: $error');
+      }
+    }
+  }
+
+  Future<void> _handleAuthorizeScopes() async {
+    final bool isAuthorized = await _googleSignIn.requestScopes(scopes);
+    setState(() {
+      _isAuthorized = isAuthorized;
+    });
+    if (isAuthorized) {
+      unawaited(_handleGetContact(_currentUser!));
+    }
+  }
+
+  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
   Widget build(BuildContext context) {
@@ -173,10 +318,9 @@ class _LoginScreen extends State<LoginScreen> {
                           const SizedBox(height: 20),
                           InkWell(
                             onTap: () {
-                              Get.to(() => SignInDemo());
-                              // Aquí puedes definir lo que quieres que suceda cuando se presione la imagen
+                              i = 1;
+                              _handleSignIn();
                               print('Botón de Google presionado');
-                              // Por ejemplo, puedes iniciar sesión con Google o realizar alguna otra acción
                             },
                             child: Container(
                               width: 50,

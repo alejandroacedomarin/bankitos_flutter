@@ -1,0 +1,23 @@
+Repositorio Flutter:
+
+https://github.com/alejandroacedomarin/bankitos_flutter.git
+
+Branch: Mario
+
+
+
+
+
+Repositorio Backend:
+
+https://github.com/Robertguarneros/bankitos-backend.git
+
+Branch: Mario
+
+
+
+
+
+
+
+Ejercicio: Iniciar Sesión / Registrarse con Google
