@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:bankitos_flutter/Screens/DeletePost.dart';
-import 'package:bankitos_flutter/Screens/UpdatePlace.dart';
-import 'package:bankitos_flutter/Screens/Reviews/ViewReviews.dart';
+import 'package:bankitos_flutter/Screens/Places/DeletePlace.dart';
+import 'package:bankitos_flutter/Screens/Places/UpdatePlace.dart';
+import 'package:bankitos_flutter/Screens/Reviews/GetReviews.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';

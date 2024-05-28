@@ -1,4 +1,4 @@
-import 'package:bankitos_flutter/Screens/MyPlacesList.dart';
+import 'package:bankitos_flutter/Screens/Places/GetPlaces.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:bankitos_flutter/Screens/Profile.dart';
-import 'package:bankitos_flutter/Screens/login_screen.dart';
+import 'package:bankitos_flutter/Screens/Users/UserDetails.dart';
+import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/utils/pickImage.dart';
 import 'package:flutter/material.dart';

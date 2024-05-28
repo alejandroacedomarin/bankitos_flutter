@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
-import 'package:bankitos_flutter/Screens/EditProfile.dart';
+import 'package:bankitos_flutter/Screens/Users/UpdateUser.dart';
 
 late UserService userService;
 

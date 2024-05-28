@@ -1,9 +1,9 @@
-import 'package:bankitos_flutter/Screens/Search.dart';
-import 'package:bankitos_flutter/Screens/login_screen.dart';
+import 'package:bankitos_flutter/Screens/MainPage/SearchEngine.dart';
+import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
-import 'package:bankitos_flutter/Screens/EditProfile.dart';
+import 'package:bankitos_flutter/Screens/Users/UpdateUser.dart';
 void main() {
   
   runApp(const MyApp());

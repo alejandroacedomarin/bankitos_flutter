@@ -1,10 +1,10 @@
-import 'package:bankitos_flutter/Screens/MyPlacesList.dart';
-import 'package:bankitos_flutter/Screens/Search.dart';
+import 'package:bankitos_flutter/Screens/Places/GetPlaces.dart';
+import 'package:bankitos_flutter/Screens/MainPage/SearchEngine.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bankitos_flutter/Screens/Profile.dart';
-import 'package:bankitos_flutter/Screens/CreatePlace.dart';
+import 'package:bankitos_flutter/Screens/Users/UserDetails.dart';
+import 'package:bankitos_flutter/Screens/Places/CreatePlace.dart';
 
 
 class NavigationMenu extends StatelessWidget {

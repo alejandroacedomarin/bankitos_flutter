@@ -2,12 +2,9 @@ import 'package:bankitos_flutter/Screens/Reviews/DeleteReview.dart';
 import 'package:bankitos_flutter/Screens/Reviews/UpdateReview.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
-import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
-
-late UserService userService;
 
 class ReveiwDetailsPage extends StatelessWidget {
   final Review review;

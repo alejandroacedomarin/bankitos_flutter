@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
-import 'package:bankitos_flutter/Screens/register_screen.dart';
+import 'package:bankitos_flutter/Screens/MainPage/Register.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';

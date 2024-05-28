@@ -1,13 +1,15 @@
-import 'package:bankitos_flutter/Screens/Reviews/ViewReviews.dart';
+import 'package:bankitos_flutter/Screens/Reviews/GetReviews.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/Services/ReviewService.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 
 late UserService userService;
+late ReviewService reviewService;
 
 class CreateReviewScreen extends StatefulWidget {
   CreateReviewScreen({Key? key}) : super(key: key);
@@ -23,6 +25,7 @@ class _CreateReviewScreen extends State<CreateReviewScreen> {
   void initState(){
     super.initState();
     userService = UserService();
+    reviewService = ReviewService();
   }
 
   @override 
@@ -113,7 +116,7 @@ class CreateReviewController extends GetxController {
       );
       print('place_id: ${newReview.place_id}');
 
-      userService.createReview(newReview).then((statusCode) {
+      reviewService.createReview(newReview).then((statusCode) {
         // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
         Get.snackbar(
           'Review Creado!', 

@@ -1,12 +1,12 @@
-import 'package:bankitos_flutter/Screens/Reviews/ViewReviews.dart';
+import 'package:bankitos_flutter/Screens/Reviews/GetReviews.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
-import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/Services/ReviewService.dart';
 import 'package:get/get.dart';
 
-late UserService userService;
+late ReviewService reviewService;
 
 
 class UpdateReviewScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _UpdateReviewScreen extends State<UpdateReviewScreen> {
   @override
   void initState() {
     super.initState();
-    userService = UserService();
+    reviewService = ReviewService();
     controller = UpdateReviewController(widget.review); // Pasa el lugar existente al controlador
   }
 
@@ -148,7 +148,7 @@ class UpdateReviewController extends GetxController {
 
   print('ID: $reviewId');
   // Llama al servicio para actualizar el lugar
-  userService.updateReview(_existingReview, reviewId).then((statusCode) {
+  reviewService.updateReview(_existingReview, reviewId).then((statusCode) {
     // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
     print('Review actualizado exitosamente');
     Get.snackbar(

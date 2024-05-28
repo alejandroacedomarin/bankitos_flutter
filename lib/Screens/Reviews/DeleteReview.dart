@@ -1,12 +1,12 @@
-import 'package:bankitos_flutter/Screens/Reviews/ViewReviews.dart';
+import 'package:bankitos_flutter/Screens/Reviews/GetReviews.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
-import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/Services/ReviewService.dart';
 import 'package:get/get.dart';
 
-late UserService userService;
+late ReviewService reviewService;
 
 class DeleteReviewScreen extends StatefulWidget {
   final Review review;
@@ -23,7 +23,7 @@ class _DeleteReviewScreen extends State<DeleteReviewScreen> {
   @override
   void initState() {
     super.initState();
-    userService = UserService();
+    reviewService = ReviewService();
     controller = DeleteReviewController(widget.review);
   }
 
@@ -94,7 +94,7 @@ class DeleteReviewController extends GetxController {
       String reviewId = _existingReview.id ?? '';
 
       print('ID: $reviewId');
-      userService.deleteReview(reviewId).then((statusCode) {
+      reviewService.deleteReview(reviewId).then((statusCode) {
         print('Review eliminado exitosamente');
         Get.snackbar(
           'Review Eliminado!',

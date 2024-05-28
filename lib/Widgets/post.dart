@@ -1,4 +1,4 @@
-import 'package:bankitos_flutter/Screens/PlaceDetails.dart';
+import 'package:bankitos_flutter/Screens/Places/PlaceDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
 import 'package:bankitos_flutter/Resources/pallete.dart';

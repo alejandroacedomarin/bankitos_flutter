@@ -1,45 +1,47 @@
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
+
+import 'dart:convert';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:bankitos_flutter/Models/ReviewModel.dart';
-import 'package:bankitos_flutter/Screens/Reviews/CreateReview.dart';
+import 'package:bankitos_flutter/Models/PlaceModel.dart';
+import 'package:bankitos_flutter/Screens/Places/CreatePlace.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
-import 'package:bankitos_flutter/Widgets/ReviewWidgets/ReviewButton.dart';
+import 'package:bankitos_flutter/Widgets/post.dart';
+import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:dio/dio.dart' ;
 import 'package:bankitos_flutter/Services/UserService.dart';
 
 late UserService userService;
 
-class ViewReviewsScreen extends StatefulWidget {
-  ViewReviewsScreen({Key? key}) : super(key: key);
+
+class PlaceListPage extends StatefulWidget {
+    PlaceListPage({Key? key}) : super(key: key);
 
   @override
-  _ViewReviewsScreen createState() => _ViewReviewsScreen();
+  _PlaceListPage createState() => _PlaceListPage();
 }
 
-class _ViewReviewsScreen extends State<ViewReviewsScreen> {
-  late List<Review> lista_reviews;
+class _PlaceListPage extends State<PlaceListPage> {
+  late List<Place> lista_users;
 
   bool isLoading = true; // Nuevo estado para indicar si se están cargando los datos
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    userService = UserService();
-    final box = GetStorage();
-    // Obtener el id guardado de la caja
-    final id = box.read('place_id');
-    print("PlaceId " +id);
-    getReviewsById(id);
+    userService = UserService();  
+    String id = userService.getUserId();
+    print('ID: $id');
+    getData(id);
   }
 
-  void getReviewsById(id) async {
-    print('getReviewsById');
-    
+  void getData(id) async {
+    print('getData');
     try {
       print('ID: $id');
-      lista_reviews = await userService.getReviewsById(id);
+      lista_users = await userService.getData(id);
       setState(() {
         isLoading = false; // Cambiar el estado de carga cuando los datos están disponibles
       });
@@ -52,8 +54,9 @@ class _ViewReviewsScreen extends State<ViewReviewsScreen> {
       print('Error al comunicarse con el backend: $error');
     }
   }
-@override 
-Widget build(BuildContext context) {
+
+  @override
+  Widget build(BuildContext context) {
     if (isLoading) {
       // Muestra un indicador de carga mientras se cargan los datos
       return Center(child: CircularProgressIndicator());
@@ -90,19 +93,19 @@ Widget build(BuildContext context) {
             children: [
               Expanded(
                 child: ListView.builder(
-                  itemCount: lista_reviews.length,
+                  itemCount: lista_users.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Card(
-                      child: PostReviewWidget(review: lista_reviews[index]),
+                      child: PostWidget(place: lista_users[index]),
                     );
                   },
                 ),
               ),
               SignInButton(
                 onPressed: (){ 
-                  Get.to(CreateReviewScreen());
+                  Get.to(CreatePostScreen());
                 },
-                text: '¡Create a Review!'
+                text: '¡Create a Place!'
               ),
             ],
           ),
@@ -111,3 +114,5 @@ Widget build(BuildContext context) {
     }
   }
 }
+
+  
