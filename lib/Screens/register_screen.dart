@@ -223,6 +223,7 @@
       );
     }
 
+
     Widget _buildOption(String option, TextEditingController controller, VoidCallback updateState) {
       bool isSelected = controller.text == option;
 
@@ -252,6 +253,7 @@
       );
     }
   }
+
 
   class RegisterScreenController extends GetxController {
     final TextEditingController firstNameController = TextEditingController();
