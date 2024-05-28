@@ -1,12 +1,12 @@
-import 'package:bankitos_flutter/Screens/Reviews/ViewReviews.dart';
+import 'package:bankitos_flutter/Screens/Reviews/GetReviews.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
-import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
-import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
-import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/Widgets/Button.dart';
+import 'package:bankitos_flutter/Widgets/TextBox.dart';
+import 'package:bankitos_flutter/Services/ReviewService.dart';
 import 'package:get/get.dart';
 
-late UserService userService;
+late ReviewService reviewService;
 
 class DeleteReviewScreen extends StatefulWidget {
   final Review review;
@@ -23,7 +23,7 @@ class _DeleteReviewScreen extends State<DeleteReviewScreen> {
   @override
   void initState() {
     super.initState();
-    userService = UserService();
+    reviewService = ReviewService();
     controller = DeleteReviewController(widget.review);
   }
 
@@ -34,13 +34,10 @@ class _DeleteReviewScreen extends State<DeleteReviewScreen> {
         title: const Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('BanKitos'),
-              SizedBox(width: 60)
-            ],
+            children: [Text('BanKitos'), SizedBox(width: 60)],
           ),
         ),
-        backgroundColor: Colors.orange,       
+        backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -60,8 +57,10 @@ class _DeleteReviewScreen extends State<DeleteReviewScreen> {
               ParamTextBox(
                 controller: controller.messageController,
                 text: 'Type the message here for deleting this reveiw',
-              ),  
-              SizedBox(height: 30,),
+              ),
+              SizedBox(
+                height: 30,
+              ),
               SignInButton(
                 onPressed: () => controller.deleteReview(),
                 text: 'Delete this Review',
@@ -80,21 +79,23 @@ class DeleteReviewController extends GetxController {
 
   late Review _existingReview;
 
-  DeleteReviewController(this._existingReview) : messageController = TextEditingController();
+  DeleteReviewController(this._existingReview)
+      : messageController = TextEditingController();
 
   String mensaje = 'delete this review';
-  
+
   void deleteReview() {
+    String cleanedMessage = messageController.text
+        .trim()
+        .toLowerCase(); // Limpiar y convertir a minúsculas
 
-      String cleanedMessage = messageController.text.trim().toLowerCase(); // Limpiar y convertir a minúsculas
-
-      print('Mensaje ingresado: "${cleanedMessage}"');
+    print('Mensaje ingresado: "${cleanedMessage}"');
 
     if (cleanedMessage == mensaje) {
       String reviewId = _existingReview.id ?? '';
 
       print('ID: $reviewId');
-      userService.deleteReview(reviewId).then((statusCode) {
+      reviewService.deleteReview(reviewId).then((statusCode) {
         print('Review eliminado exitosamente');
         Get.snackbar(
           'Review Eliminado!',
@@ -120,4 +121,3 @@ class DeleteReviewController extends GetxController {
     }
   }
 }
-

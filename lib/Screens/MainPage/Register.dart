@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
-import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
-import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
+import 'package:bankitos_flutter/Widgets/Button.dart';
+import 'package:bankitos_flutter/Widgets/TextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Resources/pallete.dart';
 import 'package:get/get.dart';
@@ -11,37 +11,20 @@ import 'package:get/get.dart';
 late UserService userService;
 
 class RegisterScreen extends StatefulWidget {
-  final String? mail;
-  final List<String>? partes;
-
-  RegisterScreen({this.mail, this.partes, Key? key}) : super(key: key);
+  RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  _RegisterScreen createState() => _RegisterScreen(mail, partes);
+  _RegisterScreen createState() => _RegisterScreen();
 }
 
 class _RegisterScreen extends State<RegisterScreen> {
   final RegisterScreenController controller =
       Get.put(RegisterScreenController());
-  final String? mail;
-  final List<String>? partes;
-
-  _RegisterScreen(this.mail, this.partes);
 
   @override
   void initState() {
     super.initState();
     userService = UserService();
-    // Inicializar los campos con los valores proporcionados
-    if (mail != null) {
-      controller.emailController.text = mail!;
-    }
-
-    if (partes != null && partes!.length >= 3) {
-      controller.firstNameController.text = partes![0];
-      controller.middleNameController.text = partes![1];
-      controller.lastNameController.text = partes![2];
-    }
   }
 
   @override
@@ -131,13 +114,12 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 'Gender', controller.genderController),
                             const SizedBox(height: 15),
                             ParamTextBox(
-                                controller: controller.passwordController,
-                                text: 'Password'),
+                                controller: controller.roleController,
+                                text: 'Role'),
                             const SizedBox(height: 15),
                             ParamTextBox(
-                                controller:
-                                    controller.confirmPasswordController,
-                                text: 'Confirm Password'),
+                                controller: controller.passwordController,
+                                text: 'Password'),
                             const SizedBox(height: 15),
                             ParamTextBox(
                                 controller: controller.emailController,
@@ -147,35 +129,42 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 controller: controller.phoneController,
                                 text: 'Phone'),
                             const SizedBox(height: 15),
-                            // Nuevo TextField deshabilitado para cumpleaños
-                            GestureDetector(
-                              onTap: () => controller.selectDate(context),
-                              child: AbsorbPointer(
-                                child: Container(
-                                  constraints: const BoxConstraints(
-                                      maxWidth:
-                                          400), // Ajusta el ancho máximo según tus necesidades
-                                  child: TextField(
-                                    controller: controller.birthController,
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: Colors
-                                          .orange, // Cambia este color al que prefieras
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                          color: Color.fromARGB(255, 0, 1, 4),
-                                          width: 3,
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      labelText:
-                                          '👆 Click here for selecting your birthdate 👆',
-                                      border: const OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            ParamTextBox(
+                                controller: controller.birthController,
+                                text: 'Cumpleaños'),
+                            const SizedBox(height: 40),
+                            ElevatedButton(
+                              onPressed: () => controller.selectDate(context),
+                              child: Text('Select Birth Date'),
                             ),
+                            const SizedBox(height: 15),
+                            ParamTextBox(
+                                controller: controller.photoController,
+                                text: 'Photo URL'),
+                            const SizedBox(height: 15),
+                            ParamTextBox(
+                                controller: controller.descriptionController,
+                                text: 'Description'),
+                            const SizedBox(height: 15),
+                            ParamTextBox(
+                                controller: controller.dniController,
+                                text: 'DNI'),
+                            const SizedBox(height: 15),
+                            ParamTextBox(
+                                controller: controller.personalityController,
+                                text: 'Personality'),
+                            const SizedBox(height: 15),
+                            ParamTextBox(
+                                controller: controller.addressController,
+                                text: 'Address'),
+                            const SizedBox(height: 15),
+                            ParamTextBox(
+                                controller: controller.emergencyNameController,
+                                text: 'Emergency Name'),
+                            const SizedBox(height: 15),
+                            ParamTextBox(
+                                controller: controller.emergencyPhoneController,
+                                text: 'Emergency Phone'),
                             const SizedBox(height: 15),
                             Visibility(
                               visible: controller.invalid,
@@ -212,7 +201,6 @@ class _RegisterScreen extends State<RegisterScreen> {
       decoration: BoxDecoration(
         color: Colors.orange, // Fondo naranja
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.black, width: 3),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,8 +245,6 @@ class _RegisterScreen extends State<RegisterScreen> {
         decoration: BoxDecoration(
           color: isSelected ? Colors.blue : null,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              color: Colors.black, width: 0.4), // Añadir un borde negro
         ),
         child: Text(
           option,
@@ -282,7 +268,13 @@ class RegisterScreenController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController birthController = TextEditingController();
-  final TextEditingController confirmPasswordController =
+  final TextEditingController photoController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController dniController = TextEditingController();
+  final TextEditingController personalityController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController emergencyNameController = TextEditingController();
+  final TextEditingController emergencyPhoneController =
       TextEditingController();
 
   bool invalid = false;
@@ -296,8 +288,8 @@ class RegisterScreenController extends GetxController {
       lastDate: DateTime.now(),
     );
     if (pickedDate != null) {
-      birthController.text = "${pickedDate.toLocal()}".split(' ')[
-          0]; // Actualizar el controlador de texto con la fecha seleccionada
+      birthController.text = pickedDate
+          .toString(); // Actualizar el controlador de texto con la fecha seleccionada
     }
   }
 
@@ -306,39 +298,44 @@ class RegisterScreenController extends GetxController {
         middleNameController.text.isEmpty ||
         lastNameController.text.isEmpty ||
         genderController.text.isEmpty ||
+        roleController.text.isEmpty ||
         passwordController.text.isEmpty ||
-        confirmPasswordController.text.isEmpty ||
         emailController.text.isEmpty ||
         phoneController.text.isEmpty ||
-        birthController.text.isEmpty) {
+        birthController.text.isEmpty ||
+        phoneController.text.isEmpty ||
+        descriptionController.text.isEmpty ||
+        dniController.text.isEmpty ||
+        personalityController.text.isEmpty ||
+        addressController.text.isEmpty ||
+        emergencyNameController.text.isEmpty ||
+        emergencyPhoneController.text.isEmpty) {
       Get.snackbar(
         'Error',
-        'Please fill the missing fields',
+        'Campos vacios',
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
-      if ((GetUtils.isEmail(emailController.text) == true) &&
-          (passwordController.text.compareTo(confirmPasswordController.text) ==
-              0)) {
+      if (GetUtils.isEmail(emailController.text) == true) {
         User newUser = User(
           id: "",
           first_name: firstNameController.text,
           middle_name: middleNameController.text,
           last_name: lastNameController.text,
           gender: genderController.text,
-          role: 'user',
+          role: roleController.text,
           password: passwordController.text,
           email: emailController.text,
           phone_number: phoneController.text,
           birth_date: birthController.text,
-          photo: '',
-          description: '',
-          dni: '',
-          personality: '',
-          address: '',
+          photo: photoController.text,
+          description: descriptionController.text,
+          dni: dniController.text,
+          personality: personalityController.text,
+          address: addressController.text,
           emergency_contact: {
-            'full_name': '',
-            'telephone': '',
+            'full_name': emergencyNameController.text,
+            'telephone': emergencyPhoneController.text,
           },
           user_rating: 0.0,
           places: [],
@@ -346,13 +343,12 @@ class RegisterScreenController extends GetxController {
           conversations: [],
           housing_offered: [],
         );
-
         userService.createUser(newUser).then((statusCode) {
           // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
           print('Usuario creado exitosamente');
           Get.snackbar(
-            'User Created!',
-            'User Created Successfully',
+            '¡Usuario Creado!',
+            'Usuario creado correctamente',
             snackPosition: SnackPosition.BOTTOM,
           );
           Get.to(() => const NavigationMenu());
@@ -360,7 +356,7 @@ class RegisterScreenController extends GetxController {
           // Manejar errores de solicitud HTTP
           Get.snackbar(
             'Error',
-            'This E-Mail, Phone or Birthdate is not valid',
+            'Este E-Mail o Teléfono ya están en uso actualmente.',
             snackPosition: SnackPosition.BOTTOM,
           );
           print('Error al enviar usuario al backend: $error');
@@ -368,7 +364,7 @@ class RegisterScreenController extends GetxController {
       } else {
         Get.snackbar(
           'Error',
-          'E-Mail is not valid',
+          'e-mail no valido',
           snackPosition: SnackPosition.BOTTOM,
         );
       }

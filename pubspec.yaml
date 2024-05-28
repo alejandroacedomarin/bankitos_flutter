@@ -1,5 +1,5 @@
 name: bankitos_flutter
-description: "Bankitos Flutter project."
+description: 'Bankitos Flutter project.'
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -44,9 +44,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   image_picker: ^0.8.6
-  google_sign_in: ^6.2.1
-  firebase_core: ^2.31.1
-  firebase_auth: ^4.19.6
+  share: ^2.0.4
+  share_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -61,19 +60,18 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/logo.png"
+  image_path: 'assets/logo.png'
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-  
+
   uses-material-design: true
-  assets: 
+  assets:
     - assets/
   # To add assets to your application, add an assets section, like this:
   # assets:

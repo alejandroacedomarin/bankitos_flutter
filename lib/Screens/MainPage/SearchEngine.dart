@@ -1,12 +1,11 @@
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/Services/PlaceService.dart';
 import 'package:bankitos_flutter/Widgets/PlaceCard.dart';
 import 'package:bankitos_flutter/Widgets/UserCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -18,31 +17,31 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isUsersSelected = true;
   bool _search = true;
   late UserService userService;
+  late PlaceService placeService;
   late List<User> listaUsers = [];
   late List<Place> listaPlaces = [];
   late User user = User(
-  id: '',
-  first_name: '',
-  middle_name: '',
-  last_name: '',
-  gender: '',
-  role: '',
-  password: '',
-  email: '',
-  phone_number: '',
-  birth_date: '',
-  places: [],
-  reviews: [],
-  conversations: [],
-  user_rating: 0,
-  photo: '',
-  description: '',
-  dni: '',
-  personality: '',
-  address: '',
-  housing_offered: [],
-  emergency_contact: {}
-);
+      id: '',
+      first_name: '',
+      middle_name: '',
+      last_name: '',
+      gender: '',
+      role: '',
+      password: '',
+      email: '',
+      phone_number: '',
+      birth_date: '',
+      places: [],
+      reviews: [],
+      conversations: [],
+      user_rating: 0,
+      photo: '',
+      description: '',
+      dni: '',
+      personality: '',
+      address: '',
+      housing_offered: [],
+      emergency_contact: {});
 
   bool isLoading = true;
 
@@ -50,7 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     userService = UserService();
-    
+    placeService = PlaceService();
     getData();
   }
 
@@ -103,7 +102,7 @@ class _SearchScreenState extends State<SearchScreen> {
       isLoading = true;
     });
     try {
-      listaPlaces = await userService.getPlaces(_searchController.text);
+      listaPlaces = await placeService.getPlaces(_searchController.text);
       setState(() {
         isLoading = false;
       });
@@ -121,7 +120,6 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _onSearch() {
-    String query = _searchController.text;
     _search = false;
     if (_isUsersSelected) {
       getUser();
@@ -225,7 +223,7 @@ class _SearchScreenState extends State<SearchScreen> {
               child: isLoading
                   ? Center(child: CircularProgressIndicator())
                   : _search
-                  ? ListView.builder(
+                      ? ListView.builder(
                           itemCount: listaUsers.length,
                           itemBuilder: (BuildContext context, int index) {
                             return Card(
@@ -233,25 +231,24 @@ class _SearchScreenState extends State<SearchScreen> {
                             );
                           },
                         )
-                  : _isUsersSelected
-                      ? ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: 1000, // Set max width as needed
-                    maxHeight: 200, // Set max height as needed
-                  ),
-                  child: Card(
-                    child: UserWidget(user: user),
-                  ),
-                )
-         
-                      : ListView.builder(
-                          itemCount: listaPlaces.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Card(
-                              child: PlaceWidget(place: listaPlaces[index]),
-                            );
-                          },
-                        ),
+                      : _isUsersSelected
+                          ? ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: 1000, // Set max width as needed
+                                maxHeight: 200, // Set max height as needed
+                              ),
+                              child: Card(
+                                child: UserWidget(user: user),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: listaPlaces.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Card(
+                                  child: PlaceWidget(place: listaPlaces[index]),
+                                );
+                              },
+                            ),
             ),
           ],
         ),
@@ -259,5 +256,3 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 }
-
-

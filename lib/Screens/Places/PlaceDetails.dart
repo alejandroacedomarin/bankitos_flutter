@@ -1,17 +1,13 @@
-import 'dart:convert';
-import 'package:bankitos_flutter/Screens/DeletePost.dart';
-import 'package:bankitos_flutter/Screens/UpdatePlace.dart';
-import 'package:bankitos_flutter/Screens/Reviews/ViewReviews.dart';
+import 'package:bankitos_flutter/Screens/Places/DeletePlace.dart';
+import 'package:bankitos_flutter/Screens/Places/UpdatePlace.dart';
+import 'package:bankitos_flutter/Screens/Reviews/GetReviews.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
-import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
-import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
+import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:get/get.dart';
-import 'package:dio/dio.dart';
 import 'package:get_storage/get_storage.dart';
-import 'dart:io';
-
+import 'package:share_plus/share_plus.dart';
 
 late UserService userService;
 
@@ -19,8 +15,6 @@ class PlaceDetailsPage extends StatelessWidget {
   final Place place;
 
   const PlaceDetailsPage(this.place, {Key? key}) : super(key: key);
-
-
   @override
   Widget build(BuildContext context) {
     final box = GetStorage();
@@ -39,6 +33,23 @@ class PlaceDetailsPage extends StatelessWidget {
           ),
         ),
         backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () {
+              Share.share(
+                  '¡Hola!\nHoy me topé con un lugar increíble que definitivamente debes visitar. 🌟 Se llama ' +
+                      place.title +
+                      '.\nTe invito a que descubras más sobre este lugar y explores otros sitios fascinantes utilizando nuestra aplicación. 😊 \nSimplemente sigue este enlace: https://bankitos.duckdns.org/ . \n\n¡Espero que disfrutes explorando tanto como yo! ✨ \n\n¡Nos vemos allí!');
+
+              Get.snackbar(
+                'Bankito compartido con exito',
+                'dios te bendiga y dios bendiga america',
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(
@@ -85,7 +96,7 @@ class PlaceDetailsPage extends StatelessWidget {
                 const SizedBox(height: 40),
                 SignInButton(
                   onPressed: () async {
-                  Get.to(ViewReviewsScreen());
+                    Get.to(ViewReviewsScreen());
                   },
                   text: 'View Reviews',
                 ),
@@ -103,7 +114,6 @@ class PlaceDetailsPage extends StatelessWidget {
                   },
                   text: 'Delete this Post',
                 ),
-                
               ],
             ),
           ),

@@ -1,14 +1,14 @@
-import 'package:bankitos_flutter/Screens/MyPlacesList.dart';
+import 'package:bankitos_flutter/Screens/Places/GetPlaces.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
-import 'package:bankitos_flutter/Models/UserModel.dart';
-import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
-import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
+import 'package:bankitos_flutter/Widgets/Button.dart';
+import 'package:bankitos_flutter/Widgets/TextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
-import 'package:bankitos_flutter/Resources/pallete.dart';
+import 'package:bankitos_flutter/Services/PlaceService.dart';
 import 'package:get/get.dart';
 
 late UserService userService;
+late PlaceService placeService;
 
 class DeletePostScreen extends StatefulWidget {
   final Place place;
@@ -26,6 +26,7 @@ class _DeletePostScreenState extends State<DeletePostScreen> {
   void initState() {
     super.initState();
     userService = UserService();
+    placeService = PlaceService();
     controller = DeletePostController(widget.place);
   }
 
@@ -36,13 +37,10 @@ class _DeletePostScreenState extends State<DeletePostScreen> {
         title: const Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('BanKitos'),
-              SizedBox(width: 60)
-            ],
+            children: [Text('BanKitos'), SizedBox(width: 60)],
           ),
         ),
-        backgroundColor: Colors.orange,       
+        backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -62,8 +60,10 @@ class _DeletePostScreenState extends State<DeletePostScreen> {
               ParamTextBox(
                 controller: controller.messageController,
                 text: 'Type the message here for deleting this post',
-              ),  
-              SizedBox(height: 30,),
+              ),
+              SizedBox(
+                height: 30,
+              ),
               SignInButton(
                 onPressed: () => controller.deletePost(),
                 text: 'Delete this Post',
@@ -82,21 +82,23 @@ class DeletePostController extends GetxController {
 
   late Place _existingPlace;
 
-  DeletePostController(this._existingPlace) : messageController = TextEditingController();
+  DeletePostController(this._existingPlace)
+      : messageController = TextEditingController();
 
   String mensaje = 'delete this post';
-  
+
   void deletePost() {
+    String cleanedMessage = messageController.text
+        .trim()
+        .toLowerCase(); // Limpiar y convertir a minúsculas
 
-      String cleanedMessage = messageController.text.trim().toLowerCase(); // Limpiar y convertir a minúsculas
-
-      print('Mensaje ingresado: "${cleanedMessage}"');
+    print('Mensaje ingresado: "${cleanedMessage}"');
 
     if (cleanedMessage == mensaje) {
       String placeId = _existingPlace.id ?? '';
 
       print('ID: $placeId');
-      userService.deletePlace(placeId).then((statusCode) {
+      placeService.deletePlace(placeId).then((statusCode) {
         print('Place eliminado exitosamente');
         Get.snackbar(
           '¡Place Eliminado!',
@@ -120,7 +122,5 @@ class DeletePostController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     }
-  
-  
   }
 }
