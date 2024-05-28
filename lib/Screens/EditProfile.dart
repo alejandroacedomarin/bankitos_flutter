@@ -21,7 +21,7 @@ void updateUser(User newUser) {
 }
 
 class EditProfileScreen extends StatefulWidget {
-  final User user;
+  final User? user;
 
   EditProfileScreen({required this.user});
 
@@ -360,11 +360,11 @@ void _showDeleteProfileDialog() {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Para eliminar este perfil tienes que introducir:'),
-              Text('Eliminar perfil: ${widget.user.email}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Eliminar perfil: ${widget.user!.email}', style: TextStyle(fontWeight: FontWeight.bold)),
               TextField(
                 controller: _deleteProfileController,
                 decoration: InputDecoration(
-                  labelText: 'Eliminar perfil: ${widget.user.email}',
+                  labelText: 'Eliminar perfil: ${widget.user!.email}',
                 ),
               ),
             ],
@@ -378,7 +378,7 @@ void _showDeleteProfileDialog() {
             ),
             TextButton(
               onPressed: () {
-                if (_deleteProfileController.text == 'Eliminar perfil: ${widget.user.email}') {
+                if (_deleteProfileController.text == 'Eliminar perfil: ${widget.user!.email}') {
                   deleteUser();
                 }
               },
