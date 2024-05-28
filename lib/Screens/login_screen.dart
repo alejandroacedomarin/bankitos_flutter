@@ -42,6 +42,7 @@ class _LoginScreen extends State<LoginScreen> {
   String _contactText = '';
   String mail = '';
   String Token = '';
+  String? fullName = '';
   int i = 0;
 
   @override
@@ -126,24 +127,95 @@ class _LoginScreen extends State<LoginScreen> {
 
           final String accessToken = authentication.accessToken!;
           final String email = account.email;
+          final String? name = account.displayName ;
           
           print('Access Token: $accessToken');
           print('Email: $email');
+          print('Name: $name');
           
           mail = email;
           Token = accessToken;
+          fullName = name;
 
           print('Access Token 2: $Token');
           print('Email 2: $mail');
+          print('Name 2: $fullName');
 
           int response = await userService.logInWithGoogle(Token, mail);
 
-          if(response == -1){
-            Get.snackbar(
-            'Error',
-            'An error with Log In occured, please, try again later',
-            snackPosition: SnackPosition.BOTTOM,
-          );
+          if(response == -1){            
+            //Si nos da esta respuesta es que no encuentra al usuario --> no hay una cuenta con este mail, así que hacemos register
+
+            String firstName = '';
+            String middleName = '';
+            String lastName = '';
+            List<String>? partes = [];
+              if(fullName != null ){
+                partes = fullName?.split(' '); 
+                if(partes != null){
+                  firstName = partes[0];
+                  middleName = partes[1];
+                  lastName = partes[2];
+                }
+                // Imprimir las variables para verificar
+                print('Primer Nombre: $firstName');
+                print('Segundo Nombre: $middleName');
+                print('Apellido: $lastName');
+              }
+              else{
+                print('fullName is Empty');
+              }
+            Get.to(RegisterScreen(mail: mail, partes: partes));
+            // Get.snackbar(
+            // 'Error',
+            // 'An error with Log In occured, please, try again later',
+            // snackPosition: SnackPosition.BOTTOM,
+            //);
+        //     String firstName = '';
+        //     String middleName = '';
+        //     String lastName = '';
+        //       if(fullName != null ){
+        //         List<String>? partes = fullName?.split(' '); 
+        //         if(partes != null){
+        //           firstName = partes[0];
+        //           middleName = partes[1];
+        //           lastName = partes[2];
+        //         }
+        //         // Imprimir las variables para verificar
+        //         print('Primer Nombre: $firstName');
+        //         print('Segundo Nombre: $middleName');
+        //         print('Apellido: $lastName');
+        //       }
+        //       else{
+        //         print('fullName is Empty');
+        //       }
+        //     // Asignar cada parte a una variable independiente
+           
+        //     User newUser = User(
+        //       id: "",
+        //       first_name: firstName,
+        //       middle_name: middleName,
+        //       last_name: lastName,
+        //       gender: "",
+        //       role: 'user',
+        //       password: "",
+        //       email: mail,
+        //       phone_number: "",
+        //       birth_date: "",
+        //       photo: '',
+        //       description: '',
+        //       dni: '',
+        //       personality: '',
+        //       address: '',
+        //       emergency_contact: {
+        //         'full_name': '',
+        //         'telephone': '',
+        //       },
+        //       user_rating: 0.0, 
+        //       places: [], reviews: [], conversations: [], housing_offered: [],
+        // );
+
+        //     int response2 = await userService.createUser(newUser);
           }
           else{
             Get.snackbar(
