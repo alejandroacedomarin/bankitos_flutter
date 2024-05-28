@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../Resources/pallete.dart';
 
 class SignInButton extends StatelessWidget {
-  final String text; 
+  final String text;
   final VoidCallback onPressed;
-  const SignInButton({Key? key, required this.onPressed, required this.text}) : super(key: key);
+  const SignInButton({Key? key, required this.onPressed, required this.text})
+      : super(key: key);
 
-  @override 
-  Widget build(BuildContext context){
+  @override
+  Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -15,10 +15,13 @@ class SignInButton extends StatelessWidget {
         backgroundColor: Colors.orange,
         foregroundColor: Color.fromARGB(198, 0, 0, 0),
       ),
-      child: Text(text, style: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 17,
-      ),),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 17,
+        ),
+      ),
     );
   }
 }

@@ -1,13 +1,10 @@
 import 'dart:ui';
-
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
-import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Screens/MainPage/Register.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
-import 'package:bankitos_flutter/Resources/pallete.dart';
 import 'package:get/get.dart';
 
 late UserService userService;
@@ -102,7 +99,7 @@ class _LoginScreen extends State<LoginScreen> {
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [  
+              children: [
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -111,8 +108,7 @@ class _LoginScreen extends State<LoginScreen> {
                       width: 450,
                       height: 450,
                       fit: BoxFit.cover,
-                    ),  
-
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(30),
                       child: Column(

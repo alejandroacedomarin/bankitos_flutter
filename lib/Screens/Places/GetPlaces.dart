@@ -1,6 +1,3 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
-
-import 'dart:convert';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -8,16 +5,15 @@ import 'package:bankitos_flutter/Models/PlaceModel.dart';
 import 'package:bankitos_flutter/Screens/Places/CreatePlace.dart';
 import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
 import 'package:bankitos_flutter/Widgets/post.dart';
-import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
-import 'package:dio/dio.dart' ;
 import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/Services/PlaceService.dart';
 
 late UserService userService;
-
+late PlaceService placeService;
 
 class PlaceListPage extends StatefulWidget {
-    PlaceListPage({Key? key}) : super(key: key);
+  PlaceListPage({Key? key}) : super(key: key);
 
   @override
   _PlaceListPage createState() => _PlaceListPage();
@@ -26,12 +22,14 @@ class PlaceListPage extends StatefulWidget {
 class _PlaceListPage extends State<PlaceListPage> {
   late List<Place> lista_users;
 
-  bool isLoading = true; // Nuevo estado para indicar si se están cargando los datos
+  bool isLoading =
+      true; // Nuevo estado para indicar si se están cargando los datos
 
   @override
   void initState() {
     super.initState();
-    userService = UserService();  
+    userService = UserService();
+    placeService = PlaceService();
     String id = userService.getUserId();
     print('ID: $id');
     getData(id);
@@ -41,9 +39,10 @@ class _PlaceListPage extends State<PlaceListPage> {
     print('getData');
     try {
       print('ID: $id');
-      lista_users = await userService.getData(id);
+      lista_users = await placeService.getData(id);
       setState(() {
-        isLoading = false; // Cambiar el estado de carga cuando los datos están disponibles
+        isLoading =
+            false; // Cambiar el estado de carga cuando los datos están disponibles
       });
     } catch (error) {
       Get.snackbar(
@@ -65,15 +64,12 @@ class _PlaceListPage extends State<PlaceListPage> {
       return Scaffold(
         appBar: AppBar(
           title: const Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('My Places'),
-              SizedBox(width: 60)
-            ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [Text('My Places'), SizedBox(width: 60)],
+            ),
           ),
-        ),          
-        backgroundColor: Colors.orange,      
+          backgroundColor: Colors.orange,
           elevation: 0,
           leading: Builder(
             builder: (context) => IconButton(
@@ -87,7 +83,7 @@ class _PlaceListPage extends State<PlaceListPage> {
             ),
           ),
         ),
-       body: Padding(
+        body: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
             children: [
@@ -102,11 +98,10 @@ class _PlaceListPage extends State<PlaceListPage> {
                 ),
               ),
               SignInButton(
-                onPressed: (){ 
-                  Get.to(CreatePostScreen());
-                },
-                text: '¡Create a Place!'
-              ),
+                  onPressed: () {
+                    Get.to(CreatePostScreen());
+                  },
+                  text: '¡Create a Place!'),
             ],
           ),
         ),
@@ -114,5 +109,3 @@ class _PlaceListPage extends State<PlaceListPage> {
     }
   }
 }
-
-  
