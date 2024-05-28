@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Screens/Reviews/CreateReview.dart';
-import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
+import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:bankitos_flutter/Widgets/ReviewWidgets/ReviewButton.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -21,27 +21,29 @@ class ViewReviewsScreen extends StatefulWidget {
 class _ViewReviewsScreen extends State<ViewReviewsScreen> {
   late List<Review> lista_reviews;
 
-  bool isLoading = true; // Nuevo estado para indicar si se están cargando los datos
+  bool isLoading =
+      true; // Nuevo estado para indicar si se están cargando los datos
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     reviewService = ReviewService();
     final box = GetStorage();
     // Obtener el id guardado de la caja
     final id = box.read('place_id');
-    print("PlaceId " +id);
+    print("PlaceId " + id);
     getReviewsById(id);
   }
 
   void getReviewsById(id) async {
     print('getReviewsById');
-    
+
     try {
       print('ID: $id');
       lista_reviews = await reviewService.getReviewsById(id);
       setState(() {
-        isLoading = false; // Cambiar el estado de carga cuando los datos están disponibles
+        isLoading =
+            false; // Cambiar el estado de carga cuando los datos están disponibles
       });
     } catch (error) {
       Get.snackbar(
@@ -52,8 +54,9 @@ class _ViewReviewsScreen extends State<ViewReviewsScreen> {
       print('Error al comunicarse con el backend: $error');
     }
   }
-@override 
-Widget build(BuildContext context) {
+
+  @override
+  Widget build(BuildContext context) {
     if (isLoading) {
       // Muestra un indicador de carga mientras se cargan los datos
       return Center(child: CircularProgressIndicator());
@@ -62,15 +65,12 @@ Widget build(BuildContext context) {
       return Scaffold(
         appBar: AppBar(
           title: const Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('My Places'),
-              SizedBox(width: 60)
-            ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [Text('My Places'), SizedBox(width: 60)],
+            ),
           ),
-        ),          
-        backgroundColor: Colors.orange,      
+          backgroundColor: Colors.orange,
           elevation: 0,
           leading: Builder(
             builder: (context) => IconButton(
@@ -84,7 +84,7 @@ Widget build(BuildContext context) {
             ),
           ),
         ),
-       body: Padding(
+        body: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
             children: [
@@ -99,11 +99,10 @@ Widget build(BuildContext context) {
                 ),
               ),
               SignInButton(
-                onPressed: (){ 
-                  Get.to(CreateReviewScreen());
-                },
-                text: '¡Create a Review!'
-              ),
+                  onPressed: () {
+                    Get.to(CreateReviewScreen());
+                  },
+                  text: '¡Create a Review!'),
             ],
           ),
         ),

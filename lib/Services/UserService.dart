@@ -35,10 +35,6 @@ class UserService {
   //Función createUser
   Future<int> createUser(User newUser) async {
     print('createUser');
-    print('try');
-    //Aquí llamamos a la función request
-    print('request');
-    // Utilizar Dio para enviar la solicitud POST a http://127.0.0.1:3000/users
     Response response =
         await dio.post('$baseUrl/users', data: newUser.toJson());
     //En response guardamos lo que recibimos como respuesta
@@ -124,7 +120,6 @@ class UserService {
     try {
       var res = await dio.put('$baseUrl/users/$id', data: revtoJson(user));
       print(res.data);
-      print('akiiiiiiiiiiiiiiiii');
       User responseData = User.fromJson(res.data
           as Map<String, dynamic>); // Obtener los datos de la respuesta
 
@@ -181,9 +176,6 @@ class UserService {
 
     Response response =
         await dio.post('$baseUrl/login', data: logInToJson(logIn));
-    // En response guardamos lo que recibimos como respuesta
-    // Printeamos los datos recibidos
-
     // Asegúrate de que response.data es un mapa decodificado
     Map<String, dynamic> data = response.data;
     print('Data: $data');

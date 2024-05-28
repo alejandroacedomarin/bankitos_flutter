@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
 import 'package:bankitos_flutter/Screens/Places/CreatePlace.dart';
-import 'package:bankitos_flutter/Widgets/button_sign_in.dart';
+import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:bankitos_flutter/Widgets/post.dart';
 import 'package:get/get.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';

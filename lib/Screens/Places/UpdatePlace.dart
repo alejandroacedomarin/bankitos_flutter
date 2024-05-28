@@ -2,7 +2,7 @@ import 'package:bankitos_flutter/Screens/Places/GetPlaces.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
 import 'package:bankitos_flutter/Widgets/Button.dart';
-import 'package:bankitos_flutter/Widgets/paramTextBox.dart';
+import 'package:bankitos_flutter/Widgets/TextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Services/PlaceService.dart';
 import 'package:get/get.dart';

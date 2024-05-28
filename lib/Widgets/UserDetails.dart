@@ -1,6 +1,6 @@
 import 'package:bankitos_flutter/Models/UserModel.dart';
-import 'package:bankitos_flutter/Widgets/profileInfo.dart';
-import 'package:bankitos_flutter/Widgets/profileStars.dart';
+import 'package:bankitos_flutter/Widgets/ProfileInfo.dart';
+import 'package:bankitos_flutter/Widgets/Stars.dart';
 import 'package:flutter/material.dart';
 
 class UserDetails extends StatelessWidget {
