@@ -59,6 +59,39 @@ class UserService {
     }
   }
 
+  Future<int> logOut() async{
+    print('Log Out');
+
+    try{
+      dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        // Obtener el token guardado
+        final token = getToken();
+
+        print('token: ${token}');
+        
+        // Si el token está disponible, agregarlo a la cabecera 'x-access-token'
+        if (token != null) {
+          options.headers['x-access-token'] = token;
+        }
+        return handler.next(options);
+      },
+    ));
+
+      print('URL: $baseUrl/login');
+      print(logInToJson(logIn));
+      
+      Response response = await dio.post('$baseUrl/logout');
+      Map<String, dynamic> data = response.data;
+      print('Data: $data');
+      return 0;
+    }
+    catch(error){
+      print('Error with log out: $error');
+      return -1;
+    }
+  }
+
    Future<int> logIn(logIn) async {
     print('LogIn');
     

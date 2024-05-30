@@ -1,9 +1,12 @@
+import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Screens/Users/UpdateUser.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 late UserService userService;
 
@@ -13,6 +16,8 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
+  final UserDetailsController controller = Get.put(UserDetailsController());
+
   late User user;
 
   @override
@@ -85,32 +90,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       : NetworkImage(
                           user.photo), // URL de la foto si está disponible
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 Text(
                   '${user.first_name} ${user.last_name}',
-                  style: TextStyle(fontSize: 16.0),
+                  style: const TextStyle(fontSize: 16.0),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 ExpansionTile(
-                  title: Text(
+                  title: const Text(
                     'Description',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
                         user.description,
-                        style: TextStyle(fontSize: 14.0),
+                        style: const TextStyle(fontSize: 14.0),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 20.0),
-            Divider(), // Línea separadora
+            const SizedBox(height: 20.0),
+            const Divider(), // Línea separadora
             SizedBox(height: 20.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,6 +159,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ],
             ),
             SizedBox(height: 20.0),
+            const Divider(),
+            SignInButton(
+              onPressed: () => controller.logOut(),
+              text: 'Log Out',
+            ),
           ],
         ),
       ),
@@ -263,3 +273,38 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 }
+
+class UserDetailsController extends GetxController {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  void logOut() async {
+    try {
+      // Desconectar de Google
+      await _googleSignIn.disconnect();
+      print('Google Sign Out exitoso');
+    } catch (error) {
+      print('Error al cerrar sesión en Google: $error');
+    }
+
+    // Luego cerrar sesión en la aplicación
+    userService.logOut().then((statusCode) {
+      // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
+      print('Log Out exitoso');
+      Get.snackbar(
+        'Log Out',
+        'Log Out Successfull',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      Get.offAll(() => LoginScreen());
+    }).catchError((error) {
+      // Manejar errores de solicitud HTTP
+      Get.snackbar(
+        'Error',
+        'Error with Log Out',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      print('Error al hacer logout: $error');
+    });
+  } 
+}
+
