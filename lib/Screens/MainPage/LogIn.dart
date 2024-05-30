@@ -42,10 +42,10 @@ class _LoginScreen extends State<LoginScreen> {
   String _contactText = '';
   String mail = '';
   String Token = '';
-  String? fullName = '';
-  String? phoneNumber = '';
-  String? gender = '';
-  String? birthday = '';
+  String fullName = '';
+  String phoneNumber = '';
+  String gender = '';
+  String birthday = '';
   int i = 0;
 
   @override
@@ -64,100 +64,222 @@ class _LoginScreen extends State<LoginScreen> {
       });
 
       if (isAuthorized) {
-        unawaited(_handleGetContact(account!));
+        await(_handleGetContact(account!));
       }
     });
     _googleSignIn.signInSilently();
   }
 
-  // Future<void> _handleGetContact(GoogleSignInAccount user) async {
-  //   setState(() {
-  //     _contactText = 'Loading contact info...';
-  //   });
-    
-  //   final http.Response response = await http.get(
-  //   Uri.parse('https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses'),
-  //   headers: await user.authHeaders,
-  // );
-  //   if (response.statusCode != 200) {
-  //     setState(() {
-  //       _contactText = 'People API gave a ${response.statusCode} '
-  //           'response. Check logs for details.';
-  //     });
-  //     print('People API ${response.statusCode} response: ${response.body}');
-  //     return;
-  //   }
-  //   final Map<String, dynamic> data =
-  //       json.decode(response.body) as Map<String, dynamic>;
-  //   final String? namedContact = _pickFirstNamedContact(data);
-  //   setState(() {
-  //     if (namedContact != null) {
-  //       _contactText = 'I see you know $namedContact!';
-  //     } else {
-  //       _contactText = 'No contacts to display.';
-  //     }
-  //   });
-  // }
+//  Future<void> _handleGetContact(GoogleSignInAccount user) async {
+//   setState(() {
+//     _contactText = 'Loading contact info...';
+//   });
 
- Future<void> _handleGetContact(GoogleSignInAccount user) async {
-  setState(() {
-    _contactText = 'Loading contact info...';
-  });
+//   final http.Response response = await http.get(
+//     Uri.parse('https://people.googleapis.com/v1/people/me?personFields=phoneNumbers,emailAddresses,names,addresses,genders,birthdays'),
+//     headers: await user.authHeaders
+//   );
+//   print('Hola: ${response.statusCode}');
 
-  final http.Response response = await http.get(
-    Uri.parse('https://people.googleapis.com/v1/people/me?personFields=phoneNumbers,emailAddresses,names,addresses,genders,birthdays'),
-    headers: await user.authHeaders
-  );
-  print('Hola: ${response.statusCode}');
-
-  print('Response: ${response.body}');
+//   print('Response: ${response.body}');
   
-  if (response.statusCode == 200) {
-    print("Estoy aqui");
-    final Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+//   if (response.statusCode == 200) {
 
-    // Intenta acceder a la información de nombres y correo electrónico
-    final List<dynamic>? names = data['names'] as List<dynamic>?;
-    final List<dynamic>? emailAddresses = data['emailAddresses'] as List<dynamic>?;
-    final List<dynamic>? phoneNumbers = data['phoneNumbers'] as List<dynamic>?;
-    final List<dynamic>? genders = data['genders'] as List<dynamic>?;
-    final List<dynamic>? birthdays = data['birthdays'] as List<dynamic>?;
+//     print("Estoy aqui");
+    
+//     final Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
 
-    // Verifica si se encontraron datos y accede a ellos si es posible
-    if (names != null && names.isNotEmpty) {
-      final String? fullName = names[0]['displayName'] as String?;
-      print('Full Name: $fullName');
-    }
-    if (emailAddresses != null && emailAddresses.isNotEmpty) {
-      final String? email = emailAddresses[0]['value'] as String?;
-      print('Email: $email');
-    }
-    if (phoneNumbers != null && phoneNumbers.isNotEmpty) {
-      final String? phoneNumber = phoneNumbers[0]['value'] as String?;
-      print('Phone Number: $phoneNumber');
-    }
-    if (genders != null && genders.isNotEmpty) {
-      final String? gender = genders[0]['value'] as String?;
-      print('Gender: $gender');
-    }
-    if (birthdays != null && birthdays.isNotEmpty) {
-      final String? birthday = birthdays[0]['date'] as String?;
-      print('Birthday: $birthday');
-    }
+//     // Intenta acceder a la información de nombres y correo electrónico
+//     final List<dynamic>? names = data['names'] as List<dynamic>?;
+//     final List<dynamic>? emailAddresses = data['emailAddresses'] as List<dynamic>?;
+//     final List<dynamic>? phoneNumbers = data['phoneNumbers'] as List<dynamic>?;
+//     final List<dynamic>? genders = data['genders'] as List<dynamic>?;
+//     final List<dynamic>? birthdays = data['birthdays'] as List<dynamic>?;
 
+
+//     // Verifica si se encontraron datos y accede a ellos si es posible
+//     if (names != null && names.isNotEmpty) {
+//       final String? fullName = names[0]['displayName'] as String?;
+//       print('Full Name: $fullName');
+
+//     }
+//     if (emailAddresses != null && emailAddresses.isNotEmpty) {
+//       final String? email = emailAddresses[0]['value'] as String?;
+//       print('Email: $email');
+//     }
+//     if (phoneNumbers != null && phoneNumbers.isNotEmpty) {
+//       phoneNumber = phoneNumbers[0]['value'] as String;
+//       print('Phone Number: $phoneNumber');
+//     }
+//     if (genders != null && genders.isNotEmpty) {
+//       gender = genders[0]['value'] as String;
+//       print('Gender: $gender');
+//     }
+//     if (birthdays != null && birthdays.isNotEmpty) {
+//       birthday = birthdays[0]['date'] as String;
+//       print('Birthday: $birthday');
+//     }
+
+//     setState(() {
+//       _contactText = 'Contact info loaded';
+//     });
+
+//     // Continuar con el proceso de inicio de sesión o registro
+//     // logInOrRegister(email, fullName, phoneNumber, gender, birthday);
+//   } else {
+//     setState(() {
+//       _contactText = 'Error: ${response.statusCode}';
+//     });
+//   }
+// }
+
+Future<void> _handleGetContact(GoogleSignInAccount user) async {
     setState(() {
-      _contactText = 'Contact info loaded';
+      _contactText = 'Loading contact info...';
     });
 
-    // Continuar con el proceso de inicio de sesión o registro
-    // logInOrRegister(email, fullName, phoneNumber, gender, birthday);
-  } else {
-    setState(() {
-      _contactText = 'Error: ${response.statusCode}';
-    });
+    final http.Response response = await http.get(
+      Uri.parse(
+          'https://people.googleapis.com/v1/people/me?personFields=phoneNumbers,emailAddresses,names,addresses,genders,birthdays'),
+      headers: await user.authHeaders,
+    );
+    print('Hola: ${response.statusCode}');
+
+    print('Response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      print("Estoy aqui");
+
+      final Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+
+      // Intenta acceder a la información de nombres y correo electrónico
+      final List<dynamic>? names = data['names'] as List<dynamic>?;
+      final List<dynamic>? emailAddresses = data['emailAddresses'] as List<dynamic>?;
+      final List<dynamic>? phoneNumbers = data['phoneNumbers'] as List<dynamic>?;
+      final List<dynamic>? genders = data['genders'] as List<dynamic>?;
+      final List<dynamic>? birthdays = data['birthdays'] as List<dynamic>?;
+
+      // Guardar los valores en el estado del widget
+      if (names != null && names.isNotEmpty) {
+        fullName = names[0]['displayName'] as String;
+        print('Full Name: $fullName');
+      }
+      if (emailAddresses != null && emailAddresses.isNotEmpty) {
+        mail = emailAddresses[0]['value'] as String;
+        print('Email: $mail');
+      }
+      if (phoneNumbers != null && phoneNumbers.isNotEmpty) {
+        phoneNumber = phoneNumbers[0]['value'] as String;
+        print('Phone Number: $phoneNumber');
+      }
+      
+      if (birthdays != null && birthdays.isNotEmpty) {
+        final Map<String, dynamic> date = birthdays[0]['date'];
+        final int? year = date['year'] as int?;
+        final int? month = date['month'] as int?;
+        final int? day = date['day'] as int?;
+        
+        if (year != null && month != null && day != null) {
+          birthday = '$year-$month-$day';
+          print('Birthday: $birthday');
+        } else {
+          print('Error: Missing year, month, or day in birthday data');
+        }
+      }
+
+      if (genders != null && genders.isNotEmpty) {
+        gender = genders[0]['value'] as String;
+        print('Gender: $gender');
+      }
+      setState(() {
+        _contactText = 'Contact info loaded';
+      });
+      String firstName = '';
+            String middleName = '';
+            String lastName = '';
+            List<String>? partes = [];
+              if(fullName != '' ){
+                partes = fullName.split(' '); 
+                if(partes != null){
+                  if(partes.length>=3){
+                    firstName = partes[0];
+                    middleName = partes[1];
+                    lastName = partes[2];
+                  }
+                  else{
+                    firstName = partes[0];
+                    lastName = partes[1];
+                  }
+                }
+                // Imprimir las variables para verificar
+                print('Primer Nombre: $firstName');
+                print('Segundo Nombre: $middleName');
+                print('Apellido: $lastName');
+              }
+              else{
+                print('fullName is Empty');
+              }
+      // Verificar si se deben realizar el registro automático o redirigir al usuario a la pantalla de registro manual
+      if (fullName != '' && mail != '' && gender != '' && birthday != '' && phoneNumber != '') {
+        // Se tienen todos los valores necesarios para realizar el registro automático
+        User newUser = User(
+          id: "",
+          first_name: firstName,
+          middle_name: middleName ,
+          last_name: lastName,
+          gender: gender,
+          role: 'user',
+          password: '',
+          email: mail ,
+          phone_number: phoneNumber,
+          birth_date: birthday,
+          photo: '',
+          description: '',
+          dni: '',
+          personality: '',
+          address: '',
+          emergency_contact: {
+            'full_name': '',
+            'telephone': '',
+          },
+          user_rating: 0.0,
+          places: [],
+          reviews: [],
+          conversations: [],
+          housing_offered: [],
+        );
+        userService.createUser(newUser).then((statusCode) {
+          // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
+          print('Usuario creado exitosamente');
+          Get.snackbar(
+            'User Created!',
+            'User Created Successfully',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          Get.to(() => const NavigationMenu());
+        }).catchError((error) {
+          // Manejar errores de solicitud HTTP
+          Get.snackbar(
+            'Error',
+            'This E-Mail, Phone or Birthdate is not valid',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          print('Error al enviar usuario al backend: $error');
+        });
+      } else {        
+        print('Faltan algunos valores, redirigir al usuario a la pantalla de registro manual');
+        if(gender == '' || birthday == '' || phoneNumber == ''){
+          Get.to(RegisterScreen(mail: mail, partes: partes, phone: phoneNumber, gen: gender, birthDate: birthday));
+        }
+        // Faltan algunos valores, redirigir al usuario a la pantalla de registro manual
+      }
+
+    } else {
+      setState(() {
+        _contactText = 'Error: ${response.statusCode}';
+      });
+    }
   }
-}
-
 
   String? _pickFirstNamedContact(Map<String, dynamic> data) {
     final List<dynamic>? connections = data['connections'] as List<dynamic>?;
@@ -179,88 +301,166 @@ class _LoginScreen extends State<LoginScreen> {
     return null;
   }
 
-  Future<void> _handleSignIn() async {
-    if(i == 1){
-      try {
-        i = 0;
-        final GoogleSignInAccount? account = await _googleSignIn.signIn();
-        if (account != null) {
-          final GoogleSignInAuthentication authentication = await account.authentication;
+  // Future<void> _handleSignIn() async {          
+  //   String phone = '';
+  //   String gen = '';
+  //   String birthDate = '';
 
-          final String accessToken = authentication.accessToken!;
-          final String email = account.email;
-          final String? name = account.displayName ;
-          
-          print('Access Token: $accessToken');
-          print('Email: $email');
-          print('Name: $name');
-          
-          mail = email;
-          Token = accessToken;
-          fullName = name;
+  //   if(i == 1){
+  //     try {
+  //       i = 0;
+  //       final GoogleSignInAccount? account = await _googleSignIn.signIn();
+  //       if (account != null) {
+  //         final GoogleSignInAuthentication authentication = await account.authentication;
 
-          print('Access Token 2: $Token');
-          print('Email 2: $mail');
-          print('Name 2: $fullName');
+  //         final String accessToken = authentication.accessToken!;
+  //         final String email = account.email;
+  //         final String? name = account.displayName ;
+  //         if(phoneNumber != null){phone = phoneNumber;}
+  //         if(gender != null){gen = gender;}
+  //         if(birthday != null){birthDate = birthday;}
+                
+  //         print('Access Token: $accessToken');
+  //         print('Email: $email');
+  //         print('Name: $name');
+  //         print('Phone: $phone');
+  //         print('Birth: $birthDate');
+  //         print('Gender: $gen');
 
-          int response = await userService.logInWithGoogle(Token, mail);
+  //         mail = email;
+  //         Token = accessToken;
+  //         fullName = name;
 
-          print('Response received in LogIn from Log In with Google: $response');
+  //         print('Access Token 2: $Token');
+  //         print('Email 2: $mail');
+  //         print('Name 2: $fullName');
+  //         print('Phone: $phone');
+  //         print('Birth: $birthDate');
+  //         print('Gender: $gen');
 
-          if(response == -1){        
+  //         int response = await userService.logInWithGoogle(Token, mail);
+
+  //         print('Response received in LogIn from Log In with Google: $response');
+
+  //         if(response == -1){        
             
-            print('Response is -1');
-            //Si nos da esta respuesta es que no encuentra al usuario --> no hay una cuenta con este mail, así que hacemos register
+  //           print('Response is -1');
 
-            String firstName = '';
-            String middleName = '';
-            String lastName = '';
-            List<String>? partes = [];
-              if(fullName != null ){
-                partes = fullName?.split(' '); 
-                if(partes != null){
-                  firstName = partes[0];
-                  middleName = partes[1];
-                  lastName = partes[2];
-                }
-                // Imprimir las variables para verificar
-                print('Primer Nombre: $firstName');
-                print('Segundo Nombre: $middleName');
-                print('Apellido: $lastName');
-                print('Data: $email, $fullName, $phoneNumber, $gender, $birthday');
-              }
-              else{
-                print('fullName is Empty');
-              }
-            Get.to(RegisterScreen(mail: mail, partes: partes));
-           
-          }
-          else{
-            Get.snackbar(
-            'Log In Successful',
-            'Log In Successful',
-            snackPosition: SnackPosition.BOTTOM,
-          );
-          Get.to(() => NavigationMenu());
-          }
-          } else {
-          print('Inicio de sesión cancelado por el usuario.');
-        }
-      } catch (error) {
-        print('Error al iniciar sesión: $error');
-      }
-    }
-  }
+  //           String firstName = '';
+  //           String middleName = '';
+  //           String lastName = '';
+  //           List<String>? partes = [];
+  //             if(fullName != null ){
+  //               partes = fullName?.split(' '); 
+  //               if(partes != null){
+  //                 if(partes.length>=3){
+  //                   firstName = partes[0];
+  //                   middleName = partes[1];
+  //                   lastName = partes[2];
+  //                 }
+  //                 else{
+  //                   firstName = partes[0];
+  //                   lastName = partes[1];
+  //                 }
+  //               }
+  //               // Imprimir las variables para verificar
+  //               print('Primer Nombre: $firstName');
+  //               print('Segundo Nombre: $middleName');
+  //               print('Apellido: $lastName');
+  //               print('Data: $email, $fullName, $phone, $gen, $birthDate');
+  //             }
+  //             else{
+  //               print('fullName is Empty');
+  //             }
+  //           if(phone != '' || birthDate != '' || gen != ''){
+  //             //Tenemos todos los datos --> Se hace el register automáticamente
+  //             User newUser = User(
+  //               id: "",
+  //               first_name: firstName,
+  //               middle_name: middleName,
+  //               last_name: lastName,
+  //               gender: gen,
+  //               role: 'user',
+  //               password: '',
+  //               email: mail,
+  //               phone_number: phone,
+  //               birth_date: birthDate,
+  //               photo: '',
+  //               description: '',
+  //               dni: '',
+  //               personality: '',
+  //               address: '',
+  //               emergency_contact: {
+  //                 'full_name': '',
+  //                 'telephone': '',
+  //               },
+  //               user_rating: 0.0,
+  //               places: [], reviews: [], conversations: [], housing_offered: [],
+  //             );
+  //             userService.createUser(newUser).then((statusCode) {
+  //             // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
+  //             print('Usuario creado exitosamente');
+  //             Get.snackbar(
+  //               'User Created!',
+  //               'User Created Successfully',
+  //               snackPosition: SnackPosition.BOTTOM,
+  //             );
+  //             Get.to(() => const NavigationMenu());
+  //           }).catchError((error) {
+  //             // Manejar errores de solicitud HTTP
+  //             Get.snackbar(
+  //               'Error',
+  //               'This E-Mail, Phone or Birthdate is not valid',
+  //               snackPosition: SnackPosition.BOTTOM,
+  //             );
+  //             print('Error al enviar usuario al backend: $error');
+  //           });
+  //           }
+  //           else{
+  //             Get.to(RegisterScreen(mail: mail, partes: partes, phone: phone, gen: gen, birthDate: birthDate));
+  //           }
+  //         }
+  //         else{
+  //           Get.snackbar(
+  //           'Log In Successful',
+  //           'Log In Successful',
+  //           snackPosition: SnackPosition.BOTTOM,
+  //         );
+  //         Get.to(() => NavigationMenu());
+  //         }
+  //         } else {
+  //         print('Inicio de sesión cancelado por el usuario.');
+  //       }
+  //     } catch (error) {
+  //       print('Error al iniciar sesión: $error');
+  //     }
+  //   }
+  // }
 
-  Future<void> _handleAuthorizeScopes() async {
-    final bool isAuthorized = await _googleSignIn.requestScopes(scopes);
-    setState(() {
-      _isAuthorized = isAuthorized;
-    });
-    if (isAuthorized) {
-      unawaited(_handleGetContact(_currentUser!));
+  Future<void> _handleSignIn() async {
+  try {
+    final GoogleSignInAccount? account = await _googleSignIn.signIn();
+    if (account != null) {
+      final GoogleSignInAuthentication authentication = await account.authentication;
+      
+      final String accessToken = authentication.accessToken!;
+      final String email = account.email ?? '';
+      final String? name = account.displayName ?? '';
+      
+      // Lógica adicional para manejar el inicio de sesión
+      print('Access Token: $accessToken');
+      print('Email: $email');
+      print('Name: $name');
+
+      // Aquí puedes enviar el token de acceso y la información del usuario a tu backend para autenticar al usuario
+    } else {
+      print('Inicio de sesión cancelado por el usuario.');
     }
+  } catch (error) {
+    print('Error al iniciar sesión: $error');
   }
+}
+
 
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 

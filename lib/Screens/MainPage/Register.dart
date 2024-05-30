@@ -13,19 +13,25 @@ late UserService userService;
 class RegisterScreen extends StatefulWidget {
   final String? mail;
   final List<String>? partes;
+  final String? gen;
+  final String? phone;
+  final String? birthDate;
 
-  RegisterScreen({this.mail, this.partes, Key? key }) : super(key: key);
+  RegisterScreen({this.mail, this.partes, this.gen, this.phone, this.birthDate, Key? key }) : super(key: key);
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState(mail, partes);
+  _RegisterScreenState createState() => _RegisterScreenState(mail, partes, gen, phone, birthDate);
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final RegisterScreenController controller = Get.put(RegisterScreenController());
   final String? mail;
   final List<String>? partes;
+  final String? gen;
+  final String? phone;
+  final String? birthDate;
       
-  _RegisterScreenState(this.mail, this.partes);
+  _RegisterScreenState(this.mail, this.partes, this.gen, this.phone, this.birthDate);
 
   @override
   void initState() {
@@ -33,14 +39,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
     userService = UserService();
     // Inicializar los campos con los valores proporcionados
     if(mail != null){
+      print('mail no null');
       controller.emailController.text = mail!;
     }
-      
     if (partes != null && partes!.length >= 3) {
       controller.firstNameController.text = partes![0];
       controller.middleNameController.text = partes![1];
       controller.lastNameController.text = partes![2];
     }
+    else if(partes != null){
+      controller.firstNameController.text = partes![0];
+      controller.lastNameController.text = partes![1];
+    }
+    if(gen != ''){
+      print('Gen no null');
+      controller.genderController.text = gen!;
+    }
+    if(phone != ''){
+      print('phone no null');
+      controller.phoneController.text = phone!;
+    }
+    if(birthDate != ''){
+      print('birthDate no null');
+      controller.birthController.text = birthDate!;
+    }
+    
   }
 
   @override 
