@@ -117,17 +117,21 @@ class UserService {
     return statusCode;
   }
 
-  Future<int> logInWithGoogle(String token, String email) async {
+  Future<int> logInWithGoogle(String token, String email, String idToken) async {
     print('LogInWithGoogle');
 
     print(email);
 
+    print('ID token: $idToken');
+
     String token1 = token;
     String email1 = email;
+    String idToken1 = idToken;
+    print('ID token 1: $idToken1');
 
     try {
       print('URL: $baseUrl/loginWithGoogle');
-      Response response = await dio.post('$baseUrl/loginWithGoogle', data: logInToJsonWithGoogle(token1, email1));
+      Response response = await dio.post('$baseUrl/loginWithGoogle', data: logInToJsonWithGoogle(token1, email1, idToken1));
       
       Map<String, dynamic> data = response.data;
       print('Data: $data');
@@ -137,16 +141,15 @@ class UserService {
       
       print('Token: $token');
       print('ID: $userId');
-      
+
       saveToken(token);
       saveUserId(userId); 
 
       int statusCode = response.statusCode!;
       print('Status code: $statusCode');
-
       return statusCode;
     } catch (e) {
-      print('Error: $e');
+      print('Error in google sign in user service: $e');
       return -1;
     }
   }
@@ -173,10 +176,11 @@ class UserService {
     };
   }
 
-  Map<String, dynamic> logInToJsonWithGoogle(String token, String email) {
+  Map<String, dynamic> logInToJsonWithGoogle(String token, String email, String idToken) {
     return {
       'email': email,
       'token': token,
+      'idToken': idToken,
     };
   }
 

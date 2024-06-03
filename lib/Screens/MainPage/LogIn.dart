@@ -40,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _contactText = '';
   String mail = '';
   String token = '';
+  String idToken1 = '';
   String fullName = '';
   String phoneNumber = '';
   String gender = '';
@@ -87,8 +88,11 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _contactText = 'Contact info loaded';
       });
+      print('token previo login with google: $token');
+      print('mail previo login with google: $mail');
+      print('idtoken previo login with google: $idToken1');
 
-      int responseCode = await userService.logInWithGoogle(token, mail);
+      int responseCode = await userService.logInWithGoogle(token, mail, idToken1);
 
       if (responseCode == -1) {
         _autoRegisterUser();
@@ -210,11 +214,14 @@ class _LoginScreenState extends State<LoginScreen> {
       final GoogleSignInAuthentication authentication = await account.authentication;
 
       final String? accessToken = authentication.accessToken;
+
       if (accessToken != null) {
         token = accessToken;
         mail = account.email;
         fullName = account.displayName ?? '';
-
+        idToken1 = authentication.idToken ?? 'empty';
+        
+        print('Id Token: $idToken1');
         print("Token: $token");
         print("Email: $mail");
         await _handleGetContact(account);
