@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Widgets/Button.dart';
+import 'package:bankitos_flutter/main.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Screens/Users/UpdateUser.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
+import 'package:restart_app/restart_app.dart';
+
 
 late UserService userService;
 
@@ -44,12 +50,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       print('Error al comunicarse con el backend: $error');
     }
   }
-
-  /* void didUpdateWidget(UserProfileScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Obtiene el usuario cada vez que el widget se actualiza
-    user = getToken();
-  } */
 
   @override
   Widget build(BuildContext context) {
@@ -116,11 +116,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
             const SizedBox(height: 20.0),
             const Divider(), // Línea separadora
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Profile Information',
                   style: TextStyle(
                     fontSize: 18.0,
@@ -141,7 +141,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Personal Information',
                   style: TextStyle(
                     fontSize: 18.0,
@@ -274,37 +274,67 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 }
 
-class UserDetailsController extends GetxController {
+
+// class UserDetailsController extends GetxController {
+//   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  // Future<void> _handleSignOut() async {
+  //   try {
+  //     await _googleSignIn.disconnect();
+  //     print('Google Sign Out exitoso');
+  //   } catch (error) {
+  //     print('Error al cerrar sesión en Google: $error');
+  //   }
+
+
+  // void logOut() async {
+  //   try {
+  //     // Desconectar de Google
+  //     await _googleSignIn.disconnect();
+  //     print('Google Sign Out exitoso');
+  //   } catch (error) {
+  //     print('Error al cerrar sesión en Google: $error');
+  //   }
+    
+
+  //   }
+  //   // Luego cerrar sesión en la aplicación
+  //   userService.logOut().then((statusCode) {
+  //     // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
+  //     print('Log Out exitoso');
+  //     Get.snackbar(
+  //       'Log Out',
+  //       'Log Out Successfull',
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //     Get.offAll(() => LoginScreen());
+  //   }).catchError((error) {
+  //     // Manejar errores de solicitud HTTP
+  //     Get.snackbar(
+  //       'Error',
+  //       'Error with Log Out',
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //     print('Error al hacer logout: $error');
+  //   });
+  // } 
+
+  class UserDetailsController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  void logOut() async {
+  Future<void> _handleSignOut() async {
     try {
-      // Desconectar de Google
       await _googleSignIn.disconnect();
       print('Google Sign Out exitoso');
     } catch (error) {
       print('Error al cerrar sesión en Google: $error');
     }
-
-    // Luego cerrar sesión en la aplicación
-    userService.logOut().then((statusCode) {
-      // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
-      print('Log Out exitoso');
-      Get.snackbar(
-        'Log Out',
-        'Log Out Successfull',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      Get.offAll(() => LoginScreen());
-    }).catchError((error) {
-      // Manejar errores de solicitud HTTP
-      Get.snackbar(
-        'Error',
-        'Error with Log Out',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      print('Error al hacer logout: $error');
-    });
   } 
+
+  void logOut() async {
+    await _handleSignOut();
+   
+    Restart.restartApp();    
+  }
 }
 

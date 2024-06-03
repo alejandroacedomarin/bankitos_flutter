@@ -10,10 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
-import 'package:bankitos_flutter/Resources/pallete.dart';
 import 'package:get/get.dart';
 
 late UserService userService;
