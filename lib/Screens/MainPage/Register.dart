@@ -1,12 +1,14 @@
 import 'dart:ui';
 import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
+import 'package:bankitos_flutter/utils/insultos.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Widgets/TextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Resources/pallete.dart';
 import 'package:get/get.dart';
+import 'package:safe_text/safe_text.dart';
 
 late UserService userService;
 
@@ -51,15 +53,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       controller.firstNameController.text = partes![0];
       controller.lastNameController.text = partes![1];
     }
-    if(gen != ''){
+    if(gen != null){
       print('Gen no null');
       controller.genderController.text = gen!;
     }
-    if(phone != ''){
+    if(phone != null){
       print('phone no null');
       controller.phoneController.text = phone!;
     }
-    if(birthDate != ''){
+    if(birthDate != null){
       print('birthDate no null');
       controller.birthController.text = birthDate!;
     }
@@ -322,6 +324,20 @@ class RegisterScreenController extends GetxController {
     passwordController.addListener(_validatePasswordInRealTime);
   }
 
+  String badWords(String text){
+    print("badWords");
+    String filteredText = SafeText.filterText(
+      text: text,
+      extraWords: insultos,
+      //excludedWords: ["exclude", "these", "words"],
+      useDefaultWords: true,
+      fullMode: true,
+      obscureSymbol: "*",
+    );
+    print('Clear text: | $text | ------- Filtered text: | $filteredText |');
+    return filteredText;
+  }
+
   bool invalid = false;
   bool parameters = false;
 
@@ -350,6 +366,10 @@ class RegisterScreenController extends GetxController {
   }
 
   void signUp() {
+    bool badWordExists = false;
+    String badWordExists1 = '';
+    String badWordExists2 = '';
+    String badWordExists3 = '';
     if (firstNameController.text.isEmpty || lastNameController.text.isEmpty ||
         genderController.text.isEmpty || passwordController.text.isEmpty || confirmPasswordController.text.isEmpty ||
         emailController.text.isEmpty || phoneController.text.isEmpty || birthController.text.isEmpty) {
@@ -360,6 +380,28 @@ class RegisterScreenController extends GetxController {
       );
     } else {
       if ((GetUtils.isEmail(emailController.text) == true) && (passwordController.text.compareTo(confirmPasswordController.text) == 0)) {
+        print('badwords empieza');
+        badWordExists1 = badWords(firstNameController.text);
+        if(badWordExists1.compareTo(firstNameController.text)!=0){
+          badWordExists = true;
+        }
+        badWordExists2 = badWords(middleNameController.text);
+        if(badWordExists2.compareTo(middleNameController.text)!=0){
+          badWordExists = true;
+        }
+        badWordExists3 = badWords(lastNameController.text);
+        if(badWordExists3.compareTo(lastNameController.text)!=0){
+          badWordExists = true;
+        }
+        if(badWordExists){
+           Get.snackbar(
+            'Error',
+            'Insults are not allowed in the registry',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          print('Bad Word Detected');
+        }
+        else{
         User newUser = User(
           id: "",
           first_name: firstNameController.text,
@@ -402,6 +444,7 @@ class RegisterScreenController extends GetxController {
           );
           print('Error al enviar usuario al backend: $error');
         });
+        }
       } else {
         Get.snackbar(
           'Error',

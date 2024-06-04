@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  badword_guard:
+    dependency: "direct main"
+    description:
+      name: badword_guard
+      sha256: "5553ab2d6b678dd9cbde6c5b619b40ea93d8e48f7b80d3fff13ea5ddce11e8c9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -552,6 +560,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
+  safe_text:
+    dependency: "direct main"
+    description:
+      name: safe_text
+      sha256: d5aea83c669d2107b4fb4e9b9b695f5db80aa575b4f86565dd80df2f9269c21b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   share:
     dependency: "direct main"
     description:

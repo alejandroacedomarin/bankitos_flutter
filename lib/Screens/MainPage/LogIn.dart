@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:get/get.dart';
+import 'package:safe_text/safe_text.dart';
 
 late UserService userService;
 

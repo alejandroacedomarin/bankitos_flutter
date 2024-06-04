@@ -48,6 +48,8 @@ dependencies:
   share: ^2.0.4
   share_plus: ^9.0.0
   restart_app: ^1.2.1
+  safe_text: ^0.0.3
+  badword_guard: ^1.0.1
 
 dev_dependencies:
   flutter_test:
