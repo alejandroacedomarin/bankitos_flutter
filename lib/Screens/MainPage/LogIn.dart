@@ -5,7 +5,7 @@ import 'package:bankitos_flutter/Screens/MainPage/Register.dart';
 import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:bankitos_flutter/Widgets/TextBox.dart';
-import 'package:bankitos_flutter/id.dart';
+//import 'package:bankitos_flutter/id.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -22,10 +22,10 @@ const List<String> scopes = <String>[
   'https://www.googleapis.com/auth/contacts.readonly',
 ];
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
+/* GoogleSignIn _googleSignIn = GoogleSignIn(
   clientId: googleClientId,
   scopes: scopes,
-);
+); */
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     userService = UserService();
 
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) async {
+   /*  _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) async {
       bool isAuthorized = account != null;
       if (kIsWeb && account != null) {
         isAuthorized = await _googleSignIn.canAccessScopes(scopes);
@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await _handleGetContact(account!);
       }
     });
-    _googleSignIn.signInSilently();
+    _googleSignIn.signInSilently(); */
   }
 
   Future<void> _handleGetContact(GoogleSignInAccount user) async {
@@ -210,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleSignIn() async {
   try {
-    final GoogleSignInAccount? account = await _googleSignIn.signIn();
+    final GoogleSignInAccount? account = null; //await _googleSignIn.signIn();
     if (account != null) {
       final GoogleSignInAuthentication authentication = await account.authentication;
 
@@ -236,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 
-  Future<void> _handleSignOut() => _googleSignIn.disconnect();
+  //Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
   Widget build(BuildContext context) {

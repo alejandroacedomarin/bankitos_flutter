@@ -12,25 +12,36 @@ import 'package:bankitos_flutter/Screens/Users/UpdateUser.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:bankitos_flutter/Models/PlaceModel.dart';
 
-
-late UserService userService;
 
 class UserProfileScreen extends StatefulWidget {
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
-  final UserDetailsController controller = Get.put(UserDetailsController());
-
+class _UserProfileScreenState extends State<UserProfileScreen> with SingleTickerProviderStateMixin {
+  late UserService userService;
   late User user;
+  bool _isLoading = true;
+  List<Place> _places = [];
+  bool _isLoadingPlaces = true;
+
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     userService = UserService();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_handleTabSelection);
     getData();
+  }
+
+  void _handleTabSelection() {
+    if (_tabController.index == 0) {
+      _loadPlaces();
+    }
   }
 
   void getData() async {
@@ -39,6 +50,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       User fetchedUser = await userService.getUser();
       setState(() {
         user = fetchedUser;
+        _isLoading = false;
       });
       print(user.id);
     } catch (error) {
@@ -48,6 +60,28 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         snackPosition: SnackPosition.BOTTOM,
       );
       print('Error al comunicarse con el backend: $error');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadPlaces() async {
+    try {
+      List<Place> places = await userService.getPlaces();
+      setState(() {
+        _places = places;
+        _isLoadingPlaces = false;
+      });
+    } catch (error) {
+      Get.snackbar(
+        'Error',
+        'No se han podido obtener los lugares.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      setState(() {
+        _isLoadingPlaces = false;
+      });
     }
   }
 
@@ -58,125 +92,170 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         title: Text('Profile'),
         backgroundColor: Colors.orange,
         actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              // Abrir pantalla de edición
-              Get.to(EditProfileScreen(user: user))?.then((_) {
-                getData();
-              });
-            },
-          ),
+          if (!_isLoading)
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                // Abrir pantalla de edición
+                Get.to(EditProfileScreen(user: user))?.then((_) {
+                  getData();
+                });
+              },
+            ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            // Sección de información del perfil
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: _buildStarRating(user.user_rating),
-                ),
-                CircleAvatar(
-                  radius: 50.0,
-                  backgroundImage: user.photo.isEmpty
-                      ? AssetImage('assets/userdefec.png')
-                          as ImageProvider<Object>?
-                      : NetworkImage(
-                          user.photo), // URL de la foto si está disponible
-                ),
-                const SizedBox(height: 10.0),
-                Text(
-                  '${user.first_name} ${user.last_name}',
-                  style: const TextStyle(fontSize: 16.0),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 10.0),
-                ExpansionTile(
-                  title: const Text(
-                    'Description',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 50.0,
+                    backgroundImage: user.photo.isEmpty
+                        ? AssetImage('assets/userdefec.png') as ImageProvider<Object>?
+                        : NetworkImage(user.photo),
                   ),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        user.description,
-                        style: const TextStyle(fontSize: 14.0),
-                      ),
+                  const SizedBox(height: 10.0),
+                  Text(
+                    '${user.first_name} ${user.last_name}',
+                    style: const TextStyle(fontSize: 16.0),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10.0),
+                  TabBar(
+                    controller: _tabController,
+                    indicatorColor: Colors.orange,
+                    overlayColor:  MaterialStateProperty.all(Colors.orange),
+                    dividerColor: Colors.orange,
+                    labelColor: Colors.orange,
+
+                    tabs: [
+                      Tab(text: 'Places'),
+                      Tab(text: 'Reviews'),
+                      Tab(text: 'Personal Info'),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildPlacesTab(),
+                        Center(child: Text('Reviews')),
+                        _buildPersonalInfo(),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 20.0),
-            const Divider(), // Línea separadora
-            const SizedBox(height: 20.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Profile Information',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
+    );
+  }
+
+  Widget _buildPlacesTab() {
+    return _isLoadingPlaces
+        ? Center(child: CircularProgressIndicator())
+        : ListView.builder(
+            itemCount: _places.length,
+            itemBuilder: (context, index) {
+              Place place = _places[index];
+              return Card(
+                color: Colors.orange[100], // Fondo de color naranja suave
+                margin: EdgeInsets.symmetric(vertical: 8.0),
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16.0),
+                  leading: place.photo.isNotEmpty
+                      ? Image.network(place.photo, width: 100, height: 100, fit: BoxFit.cover)
+                      : Image.asset('assets/userdefec.png', width: 100, height: 100, fit: BoxFit.cover),
+                  title: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          place.title,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(width: 10.0),
+                      Row(
+                        children: List.generate(5, (i) {
+                          return Icon(
+                            i < place.rating ? Icons.star : Icons.star_border,
+                            color: Colors.yellow,
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                  subtitle: Text(
+                    place.content,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ),
-                SizedBox(height: 20.0),
-                // Bloque de Profile Information
-                _buildProfileInformation('First Name', user.first_name),
-                _buildProfileInformation('Middle Name', user.middle_name),
-                _buildProfileInformation('Last Name', user.last_name),
-              ],
-            ),
-            // Botón de editar
-            SizedBox(height: 20.0),
-            Divider(), // Línea separadora
-            SizedBox(height: 20.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Personal Information',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 20.0),
-                // Campos de texto para la información personal
-                _buildPersonalInformation('Gender', user.gender),
-                _buildPersonalInformation('Role', user.role),
-                _buildPersonalInformation('Email', user.email),
-                _buildPersonalInformation('Phone Number', user.phone_number),
-                _buildPersonalInformation('Birth Date', user.birth_date),
-                _buildPasswordField('Password', user.password),
-              ],
+              );
+            },
+          );
+  }
+
+
+  Widget _buildPersonalInfo() {
+    return ListView(
+      children: [
+        const SizedBox(height: 20.0),
+        const Divider(),
+        const SizedBox(height: 20.0),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Profile Information',
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(height: 20.0),
-            const Divider(),
-            SignInButton(
-              onPressed: () => controller.logOut(),
-              text: 'Log Out',
-            ),
+            _buildProfileInformation('First Name', user.first_name),
+            _buildProfileInformation('Middle Name', user.middle_name),
+            _buildProfileInformation('Last Name', user.last_name),
           ],
         ),
-      ),
+        SizedBox(height: 20.0),
+        Divider(),
+        SizedBox(height: 20.0),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Personal Information',
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 20.0),
+            _buildPersonalInformation('Gender', user.gender),
+            _buildPersonalInformation('Role', user.role),
+            _buildPersonalInformation('Email', user.email),
+            _buildPersonalInformation('Phone Number', user.phone_number),
+            _buildPersonalInformation('Birth Date', user.birth_date),
+            _buildPasswordField('Password', user.password),
+          ],
+        ),
+        SizedBox(height: 20.0),
+        const Divider(),
+        /* SignInButton(
+          onPressed: () => controller.logOut(),
+          text: 'Log Out',
+        ), */
+      ],
     );
   }
 
   Widget _buildProfileInformation(String label, String value) {
-    // Verifica si el valor no está vacío
     if (value.isEmpty) {
-      // Si el valor está vacío, no muestra nada
       return SizedBox.shrink();
     }
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -184,12 +263,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           '$label:',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        SizedBox(width: 10.0), // Espacio entre el label y el valor
+        SizedBox(width: 10.0),
         Expanded(
           child: Text(
             value,
-            overflow:
-                TextOverflow.ellipsis, // Ajusta el texto si es demasiado largo
+            overflow: TextOverflow.ellipsis,
           ),
         ),
         SizedBox(height: 10.0),
@@ -198,12 +276,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Widget _buildPersonalInformation(String label, String value) {
-    // Verifica si el valor no está vacío
     if (value.isEmpty) {
-      // Si el valor está vacío, no muestra nada
       return SizedBox.shrink();
     }
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -211,43 +286,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           '$label:',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        SizedBox(width: 10.0), // Espacio entre el label y el valor
+        SizedBox(width: 10.0),
         Expanded(
           child: Text(
             value,
-            overflow:
-                TextOverflow.ellipsis, // Ajusta el texto si es demasiado largo
+            overflow: TextOverflow.ellipsis,
           ),
         ),
         SizedBox(height: 20.0),
       ],
-    );
-  }
-
-  Widget _buildStarRating(double rating) {
-    List<Widget> stars = [];
-    print(rating);
-    // Calcula las estrellas llenas
-    int fullStars = rating.floor();
-    for (int i = 0; i < fullStars; i++) {
-      stars.add(Icon(Icons.star, color: Colors.yellow));
-    }
-
-    // Calcula la fracción de estrella
-    double fraction = rating - fullStars;
-    if (fraction > 0) {
-      stars.add(Icon(Icons.star_half, color: Colors.yellow));
-    }
-
-    // Añade las estrellas vacías restantes
-    int emptyStars = 5 - stars.length;
-    for (int i = 0; i < emptyStars; i++) {
-      stars.add(Icon(Icons.star_border, color: Colors.yellow));
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: stars,
     );
   }
 
@@ -259,12 +306,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           '$label:',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        SizedBox(width: 10.0), // Espacio entre el label y el valor
+        SizedBox(width: 10.0),
         Expanded(
           child: Text(
             '${'*' * value.length}',
-            overflow:
-                TextOverflow.ellipsis, // Ajusta el texto si es demasiado largo
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(fontFamily: 'Courier'),
           ),
         ),

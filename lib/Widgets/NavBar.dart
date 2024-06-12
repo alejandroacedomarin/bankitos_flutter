@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bankitos_flutter/Screens/Users/UserDetails.dart';
+import 'package:bankitos_flutter/Screens/Mapa/Mapa.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -38,7 +39,7 @@ class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
 
   final screens = [
-    Container(color: Colors.green),
+    GoogleMapsScreen(),
     SearchScreen(),
     PlaceListPage(),
     UserProfileScreen()
