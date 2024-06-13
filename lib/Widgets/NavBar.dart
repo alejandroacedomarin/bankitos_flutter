@@ -16,6 +16,8 @@ class NavigationMenu extends StatelessWidget {
       bottomNavigationBar: Obx(
         () => NavigationBar(
           height: 80,
+          overlayColor:  MaterialStateProperty.all(Colors.orange),
+          indicatorColor: Colors.orange,
           elevation: 0,
           selectedIndex: controller.selectedIndex.value,
           onDestinationSelected: (index) =>

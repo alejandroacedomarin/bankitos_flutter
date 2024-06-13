@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
+import 'package:bankitos_flutter/Services/ReviewService.dart';
 import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:bankitos_flutter/main.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
+import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Screens/Users/UpdateUser.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
@@ -22,10 +24,13 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> with SingleTickerProviderStateMixin {
   late UserService userService;
+  late ReviewService reviewService;
   late User user;
   bool _isLoading = true;
   List<Place> _places = [];
+  List<Review> _reviews = [];
   bool _isLoadingPlaces = true;
+  bool _isLoadingReviews = true;
 
   late TabController _tabController;
 
@@ -33,14 +38,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
   void initState() {
     super.initState();
     userService = UserService();
+    reviewService = ReviewService();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_handleTabSelection);
     getData();
   }
 
   void _handleTabSelection() {
-    if (_tabController.index == 0) {
+    if (_tabController.index == 0 && _isLoadingPlaces) {
       _loadPlaces();
+    } else if (_tabController.index == 1 && _isLoadingReviews) {
+      _loadReviews();
     }
   }
 
@@ -85,6 +93,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
     }
   }
 
+  Future<void> _loadReviews() async {
+    try {
+      List<Review> reviews = await reviewService.getReviewsByAuthor();
+      setState(() {
+        _reviews = reviews;
+        _isLoadingReviews = false;
+      });
+    } catch (error) {
+      Get.snackbar(
+        'Error',
+        'No se han podido obtener los reviews.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      setState(() {
+        _isLoadingReviews = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,7 +132,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
           : Padding(
               padding: EdgeInsets.all(16.0),
               child: Column(
@@ -126,14 +153,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                   TabBar(
                     controller: _tabController,
                     indicatorColor: Colors.orange,
-                    overlayColor:  MaterialStateProperty.all(Colors.orange),
+                    overlayColor: MaterialStateProperty.all(Colors.orange),
                     dividerColor: Colors.orange,
                     labelColor: Colors.orange,
-
                     tabs: [
                       Tab(text: 'Places'),
                       Tab(text: 'Reviews'),
-                      Tab(text: 'Personal Info'),
+                      Tab(text: 'My Info'),
                     ],
                   ),
                   Expanded(
@@ -141,7 +167,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                       controller: _tabController,
                       children: [
                         _buildPlacesTab(),
-                        Center(child: Text('Reviews')),
+                        _buildReviewsTab(),
                         _buildPersonalInfo(),
                       ],
                     ),
@@ -154,7 +180,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
 
   Widget _buildPlacesTab() {
     return _isLoadingPlaces
-        ? Center(child: CircularProgressIndicator())
+        ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
         : ListView.builder(
             itemCount: _places.length,
             itemBuilder: (context, index) {
@@ -162,34 +188,58 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
               return Card(
                 color: Colors.orange[100], // Fondo de color naranja suave
                 margin: EdgeInsets.symmetric(vertical: 8.0),
-                child: ListTile(
-                  contentPadding: EdgeInsets.all(16.0),
-                  leading: place.photo.isNotEmpty
-                      ? Image.network(place.photo, width: 100, height: 100, fit: BoxFit.cover)
-                      : Image.asset('assets/userdefec.png', width: 100, height: 100, fit: BoxFit.cover),
-                  title: Row(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
                     children: [
+                      place.photo.isNotEmpty
+                          ? Image.network(
+                              place.photo,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/userdefec.png',
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                      SizedBox(width: 16.0),
                       Expanded(
-                        child: Text(
-                          place.title,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              place.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              place.content,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            SizedBox(height: 8.0),
+                            Row(
+                              children: List.generate(5, (i) {
+                                return Icon(
+                                  i < place.rating ? Icons.star : Icons.star_border,
+                                  color: Colors.yellow,
+                                );
+                              }),
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(width: 10.0),
-                      Row(
-                        children: List.generate(5, (i) {
-                          return Icon(
-                            i < place.rating ? Icons.star : Icons.star_border,
-                            color: Colors.yellow,
-                          );
-                        }),
-                      ),
                     ],
-                  ),
-                  subtitle: Text(
-                    place.content,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
                   ),
                 ),
               );
@@ -197,12 +247,59 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
           );
   }
 
+  Widget _buildReviewsTab() {
+    return _isLoadingReviews
+        ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+        : ListView.builder(
+            itemCount: _reviews.length,
+            itemBuilder: (context, index) {
+              Review review = _reviews[index];
+              return Card(
+                color: Colors.orange[100], // Fondo de color naranja suave
+                margin: EdgeInsets.symmetric(vertical: 8.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        review.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      Text(
+                        review.content,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      Row(
+                        children: List.generate(5, (i) {
+                          return Icon(
+                            i < review.stars ? Icons.star : Icons.star_border,
+                            color: Colors.yellow,
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+  }
 
   Widget _buildPersonalInfo() {
     return ListView(
       children: [
-        const SizedBox(height: 20.0),
-        const Divider(),
+        
         const SizedBox(height: 20.0),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +318,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
           ],
         ),
         SizedBox(height: 20.0),
-        Divider(),
+        Divider(color: Colors.orange,),
         SizedBox(height: 20.0),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,11 +336,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
             _buildPersonalInformation('Email', user.email),
             _buildPersonalInformation('Phone Number', user.phone_number),
             _buildPersonalInformation('Birth Date', user.birth_date),
-            _buildPasswordField('Password', user.password),
+            
           ],
         ),
         SizedBox(height: 20.0),
-        const Divider(),
+        const Divider(color: Colors.orange,),
         /* SignInButton(
           onPressed: () => controller.logOut(),
           text: 'Log Out',
@@ -298,26 +395,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
     );
   }
 
-  Widget _buildPasswordField(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$label:',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(width: 10.0),
-        Expanded(
-          child: Text(
-            '${'*' * value.length}',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontFamily: 'Courier'),
-          ),
-        ),
-        SizedBox(height: 20.0),
-      ],
-    );
-  }
+ 
 }
 
 

@@ -22,7 +22,8 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
 
   Future<void> _loadMarkers() async {
     List<Place> markerData = await authService.getMarcadores();
-
+    print('aki');
+    print(markerData[0].longitude);
     setState(() {
       _markers = markerData.map((data) {
         LatLng position = LatLng(data.latitude, data.longitude);

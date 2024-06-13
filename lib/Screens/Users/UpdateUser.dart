@@ -8,12 +8,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:image_picker/image_picker.dart';
 
-late UserService userService;
-final box = GetStorage();
-
-void updateUser(User newUser) {
-  GetStorage().write('user', newUser);
-}
 
 class EditProfileScreen extends StatefulWidget {
   final User user;
@@ -25,6 +19,9 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  late UserService userService;
+  final box = GetStorage();
+
   late TextEditingController _firstNameController;
   late TextEditingController _middleNameController;
   late TextEditingController _lastNameController;
@@ -38,15 +35,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _dniController;
   late TextEditingController _personalityController;
   late TextEditingController _addressController;
-  late TextEditingController _currentPasswordController =
-      TextEditingController();
-  late TextEditingController _newPasswordController = TextEditingController();
-  late TextEditingController _verifyPasswordController =
-      TextEditingController();
-  final TextEditingController _deleteProfileController =
-      TextEditingController();
+  late TextEditingController _currentPasswordController;
+  late TextEditingController _newPasswordController;
+  late TextEditingController _verifyPasswordController;
+  final TextEditingController _deleteProfileController = TextEditingController();
 
   bool _isEditingPassword = false;
+
   @override
   void initState() {
     super.initState();
@@ -54,22 +49,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     // Inicializa los controladores con los valores actuales del usuario
     _firstNameController = TextEditingController(text: widget.user.first_name);
-    _middleNameController =
-        TextEditingController(text: widget.user.middle_name);
+    _middleNameController = TextEditingController(text: widget.user.middle_name);
     _lastNameController = TextEditingController(text: widget.user.last_name);
     _genderController = TextEditingController(text: widget.user.gender);
     _emailController = TextEditingController(text: widget.user.email);
-    _phoneNumberController =
-        TextEditingController(text: widget.user.phone_number);
+    _phoneNumberController = TextEditingController(text: widget.user.phone_number);
     _birthDateController = TextEditingController(text: widget.user.birth_date);
-    _passwordController = TextEditingController(text: widget.user.password);
+    _passwordController = TextEditingController();
     _photoController = TextEditingController(text: widget.user.photo);
-    _descriptionController =
-        TextEditingController(text: widget.user.description);
+    _descriptionController = TextEditingController(text: widget.user.description);
     _dniController = TextEditingController(text: widget.user.dni);
-    _personalityController =
-        TextEditingController(text: widget.user.personality);
+    _personalityController = TextEditingController(text: widget.user.personality);
     _addressController = TextEditingController(text: widget.user.address);
+    _currentPasswordController = TextEditingController();
+    _newPasswordController = TextEditingController();
+    _verifyPasswordController = TextEditingController();
   }
 
   @override
@@ -96,7 +90,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   void selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
-    _photoController = img as TextEditingController;
+    _photoController.text = img.toString();
   }
 
   @override
@@ -118,8 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       CircleAvatar(
                         radius: 50.0,
                         backgroundImage: widget.user.photo.isEmpty
-                            ? AssetImage('assets/userdefec.png')
-                                as ImageProvider<Object>?
+                            ? AssetImage('assets/userdefec.png') as ImageProvider<Object>?
                             : NetworkImage(_photoController.text),
                       ),
                       Positioned(
@@ -138,15 +131,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   buildEditableSelectionField('Gender', _genderController),
                   _buildEditableTextField('Dni', _dniController),
                   _buildEditableTextField('Email', _emailController),
-                  _buildEditableTextField(
-                      'Phone Number', _phoneNumberController),
+                  _buildEditableTextField('Phone Number', _phoneNumberController),
                   _buildEditableTextField('Birth Date', _birthDateController),
                   _buildPasswordField('Password', _passwordController),
                   _buildEditableTextField('Address', _addressController),
-                  _buildEditableTextField(
-                      'Personality', _personalityController),
-                  _buildEditableTextField(
-                      'Description', _descriptionController),
+                  _buildEditableTextField('Personality', _personalityController),
+                  _buildEditableTextField('Description', _descriptionController),
                   SizedBox(height: 20.0),
                   ElevatedButton(
                     onPressed: _saveChanges,
@@ -171,8 +161,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ));
   }
 
-  Widget _buildEditableTextField(
-      String label, TextEditingController controller) {
+  Widget _buildEditableTextField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -203,10 +192,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget buildEditableSelectionField(
-    String label,
-    TextEditingController controller,
-  ) {
+  Widget buildEditableSelectionField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -241,8 +227,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildOption(String option, TextEditingController controller,
-      VoidCallback updateState) {
+  Widget _buildOption(String option, TextEditingController controller, VoidCallback updateState) {
     bool isSelected = controller.text == option;
 
     return GestureDetector(
@@ -288,9 +273,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () {
-                  /* setState(() {
+                  setState(() {
                     _isEditingPassword = !_isEditingPassword;
-                  }); */
+                  });
                 },
               ),
             ],
@@ -298,10 +283,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (_isEditingPassword)
             Column(
               children: [
-                //_buildPasswordTextField('Current Password', _currentPasswordController),
+                _buildPasswordTextField('Password', _passwordController),
                 _buildPasswordTextField('New Password', _newPasswordController),
-                _buildPasswordTextField(
-                    'Verify Password', _verifyPasswordController),
+                _buildPasswordTextField('Verify Password', _verifyPasswordController),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: _changePassword,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.black,
+                  ),
+                  child: Text('Change Password'),
+                ),
               ],
             )
           else
@@ -319,8 +312,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildPasswordTextField(
-      String label, TextEditingController controller) {
+  Widget _buildPasswordTextField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -359,8 +351,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Para eliminar este perfil tienes que introducir:'),
-              Text('Eliminar perfil: ${widget.user.email}',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Eliminar perfil: ${widget.user.email}', style: TextStyle(fontWeight: FontWeight.bold)),
               TextField(
                 controller: _deleteProfileController,
                 decoration: InputDecoration(
@@ -378,8 +369,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             TextButton(
               onPressed: () {
-                if (_deleteProfileController.text ==
-                    'Eliminar perfil: ${widget.user.email}') {
+                if (_deleteProfileController.text == 'Eliminar perfil: ${widget.user.email}') {
                   deleteUser();
                 }
               },
@@ -392,7 +382,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void deleteUser() async {
-    print('getUser');
     try {
       String message = await userService.deleteUser();
       Get.snackbar(
@@ -422,8 +411,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       email: _emailController.text,
       phone_number: _phoneNumberController.text,
       birth_date: _birthDateController.text,
-      // Inicializa algunos parámetros con valores predeterminados
-      password: _verifyPasswordController.text,
+      password: _passwordController.text,
       places: widget.user.places,
       reviews: widget.user.reviews,
       conversations: widget.user.conversations,
@@ -440,15 +428,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       modified_date: widget.user.modified_date,
     );
 
-    // Actualiza el usuario en el controlador, si fuera necesario
-    //print(updatedUser);
-
-    // Regresa a la pantalla anterior
-
     try {
-      await userService
-          .putUser(updatedUser)
-          .then((value) => {Navigator.pop(context)});
+      await userService.putUser(updatedUser).then((value) => {Navigator.pop(context)});
     } catch (error) {
       Get.snackbar(
         'Error',
@@ -457,5 +438,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
     }
   }
-  // Actualiza el usuario en el controlador
+
+  Future<void> _changePassword() async {
+    if (_newPasswordController.text == _verifyPasswordController.text) {
+      try {
+        await userService.changePass(_passwordController.text, _verifyPasswordController.text);
+        Get.snackbar(
+          'Success',
+          'Password changed successfully',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        Navigator.pop(context);
+      } catch (error) {
+        Get.snackbar(
+          'Error',
+          error.toString(),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } else {
+      Get.snackbar(
+        'Error',
+        'Passwords do not match',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
 }

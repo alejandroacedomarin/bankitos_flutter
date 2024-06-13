@@ -17,6 +17,10 @@ class ReviewService {
     final box = GetStorage();
     return box.read('token');
   }
+  String? getId() {
+    final box = GetStorage();
+    return box.read('id');
+  }
 
   Future<int> createReview(Review newReview) async {
     print('createReview');
@@ -84,7 +88,35 @@ class ReviewService {
       throw e; // Relanzar el error para que el llamador pueda manejarlo
     }
   }
-
+Future<List<Review>> getReviewsByAuthor() async {
+    print('getData');
+    // Interceptor para agregar el token a la cabecera 'x-access-token'
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        // Obtener el token guardado
+        final token = getToken();
+        if (token != null) {
+          options.headers['x-access-token'] = token;
+        }
+        return handler.next(options);
+      },
+    ));
+    try {
+      var id = getId();
+      print('URL: $baseUrl/review/byAuthor/$id');
+      var res = await dio.get('$baseUrl/review/byAuthor/$id');
+      List<dynamic> responseData =
+          res.data; // Obtener los datos de la respuesta
+      // Convertir los datos en una lista de objetos Place
+      List<Review> reviews =
+          responseData.map((data) => Review.fromJson(data)).toList();
+      return reviews; // Devolver la lista de lugares
+    } catch (e) {
+      // Manejar cualquier error que pueda ocurrir durante la solicitud
+      print('Error fetching data: $e');
+      throw e; // Relanzar el error para que el llamador pueda manejarlo
+    }
+  }
   Future<int> updateReview(Review newReview, String id) async {
     print('updateReview');
 
