@@ -37,7 +37,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final Controller controller = Get.put(Controller());
   GoogleSignInAccount? _currentUser;
-  bool _isAuthorized = false; 
+  bool _isAuthorized = false;
   String _contactText = '';
   String mail = '';
   String token = '';
@@ -53,7 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     userService = UserService();
 
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) async {
+    _googleSignIn.onCurrentUserChanged
+        .listen((GoogleSignInAccount? account) async {
       bool isAuthorized = account != null;
       if (kIsWeb && account != null) {
         isAuthorized = await _googleSignIn.canAccessScopes(scopes);
@@ -67,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await _handleGetContact(account!);
       }
     });
-    _googleSignIn.signInSilently(); 
+    _googleSignIn.signInSilently();
   }
 
   Future<void> _handleGetContact(GoogleSignInAccount user) async {
@@ -82,7 +83,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+      final Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
 
       _extractUserData(data);
 
@@ -93,7 +95,8 @@ class _LoginScreenState extends State<LoginScreen> {
       print('mail previo login with google: $mail');
       print('idtoken previo login with google: $idToken1');
 
-      int responseCode = await userService.logInWithGoogle(token, mail, idToken1);
+      int responseCode =
+          await userService.logInWithGoogle(token, mail, idToken1);
 
       if (responseCode == -1) {
         _autoRegisterUser();
@@ -114,7 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _extractUserData(Map<String, dynamic> data) {
     final List<dynamic>? names = data['names'] as List<dynamic>?;
-    final List<dynamic>? emailAddresses = data['emailAddresses'] as List<dynamic>?;
+    final List<dynamic>? emailAddresses =
+        data['emailAddresses'] as List<dynamic>?;
     final List<dynamic>? phoneNumbers = data['phoneNumbers'] as List<dynamic>?;
     final List<dynamic>? genders = data['genders'] as List<dynamic>?;
     final List<dynamic>? birthdays = data['birthdays'] as List<dynamic>?;
@@ -160,7 +164,11 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
 
-    if (fullName.isNotEmpty && mail.isNotEmpty && gender.isNotEmpty && birthday.isNotEmpty && phoneNumber.isNotEmpty) {
+    if (fullName.isNotEmpty &&
+        mail.isNotEmpty &&
+        gender.isNotEmpty &&
+        birthday.isNotEmpty &&
+        phoneNumber.isNotEmpty) {
       User newUser = User(
         id: "",
         first_name: firstName,
@@ -204,37 +212,42 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } else {
-      Get.to(RegisterScreen(mail: mail, partes: partes, phone: phoneNumber, gen: gender, birthDate: birthday));
+      Get.to(RegisterScreen(
+          mail: mail,
+          partes: partes,
+          phone: phoneNumber,
+          gen: gender,
+          birthDate: birthday));
     }
   }
 
   Future<void> _handleSignIn() async {
-  try {
-    final GoogleSignInAccount? account = null; //await _googleSignIn.signIn();
-    if (account != null) {
-      final GoogleSignInAuthentication authentication = await account.authentication;
+    try {
+      final GoogleSignInAccount? account = null; //await _googleSignIn.signIn();
+      if (account != null) {
+        final GoogleSignInAuthentication authentication =
+            await account.authentication;
 
-      final String? accessToken = authentication.accessToken;
+        final String? accessToken = authentication.accessToken;
 
-      if (accessToken != null) {
-        token = accessToken;
-        mail = account.email;
-        fullName = account.displayName ?? '';
-        idToken1 = authentication.idToken ?? 'empty';
-        
-        print('Id Token: $idToken1');
-        print("Token: $token");
-        print("Email: $mail");
-        await _handleGetContact(account);
-      } else {
-        print('Failed to get access token');
+        if (accessToken != null) {
+          token = accessToken;
+          mail = account.email;
+          fullName = account.displayName ?? '';
+          idToken1 = authentication.idToken ?? 'empty';
+
+          print('Id Token: $idToken1');
+          print("Token: $token");
+          print("Email: $mail");
+          await _handleGetContact(account);
+        } else {
+          print('Failed to get access token');
+        }
       }
+    } catch (error) {
+      print('Error al iniciar sesión: $error');
     }
-  } catch (error) {
-    print('Error al iniciar sesión: $error');
   }
-}
-
 
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
@@ -313,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [  
+              children: [
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -322,7 +335,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 450,
                       height: 450,
                       fit: BoxFit.cover,
-                    ),  
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(30),
                       child: Column(
@@ -368,8 +381,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Colors.orange.withOpacity(0.7), // Color de fondo con opacidad
-                              borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                              color: Colors.orange.withOpacity(
+                                  0.7), // Color de fondo con opacidad
+                              borderRadius: BorderRadius.circular(
+                                  10), // Bordes redondeados
                             ),
                             child: const Text(
                               'Or Sign In with',

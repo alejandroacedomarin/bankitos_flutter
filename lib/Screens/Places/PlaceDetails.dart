@@ -40,7 +40,7 @@ class PlaceDetailsPage extends StatelessWidget {
               Share.share(
                   '¡Hola!\nHoy me topé con un lugar increíble que definitivamente debes visitar. 🌟 Se llama ' +
                       place.title +
-                      '.\nTe invito a que descubras más sobre este lugar y explores otros sitios fascinantes utilizando nuestra aplicación. 😊 \nSimplemente sigue este enlace: https://bankitos.duckdns.org/ . \n\n¡Espero que disfrutes explorando tanto como yo! ✨ \n\n¡Nos vemos allí!');
+                      '.\nTe invito a que descubras más sobre este lugar y explores otros sitios fascinantes utilizando nuestra aplicación. 😊 \nSimplemente sigue este enlace: https://app.bankitos.duckdns.org/ . \n\n¡Espero que disfrutes explorando tanto como yo! ✨ \n\n¡Nos vemos allí!');
 
               Get.snackbar(
                 'Bankito compartido con exito',
