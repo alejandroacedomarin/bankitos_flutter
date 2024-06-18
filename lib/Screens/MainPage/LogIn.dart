@@ -223,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleSignIn() async {
     try {
-      final GoogleSignInAccount? account = null; //await _googleSignIn.signIn();
+      final GoogleSignInAccount? account = await _googleSignIn.signIn();
       if (account != null) {
         final GoogleSignInAuthentication authentication =
             await account.authentication;
@@ -397,6 +397,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 20),
                           InkWell(
                             onTap: () {
+                              print("hola");
                               i = 1;
                               _handleSignIn();
                             },
