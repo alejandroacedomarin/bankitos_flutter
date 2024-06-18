@@ -448,6 +448,7 @@ class Controller extends GetxController {
           email: mailController.text,
           password: contrasenaController.text,
         );
+
         userService.logIn(logInData).then((statusCode) {
           print('Login Exitoso');
           Get.to(() => NavigationMenu());
