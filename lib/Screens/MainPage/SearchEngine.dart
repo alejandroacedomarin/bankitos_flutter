@@ -1,8 +1,13 @@
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
+import 'package:bankitos_flutter/Models/ReviewModel.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
+import 'package:bankitos_flutter/Screens/Reviews/ReviewDetails.dart';
+import 'package:bankitos_flutter/Screens/Reviews/UpdateReview.dart';
+import 'package:bankitos_flutter/Services/ReviewService.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Services/PlaceService.dart';
 import 'package:bankitos_flutter/Widgets/PlaceCard.dart';
+import 'package:bankitos_flutter/Widgets/ReviewCard.dart';
 import 'package:bankitos_flutter/Widgets/UserCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,39 +22,21 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isUsersSelected = true;
   bool _search = true;
   late UserService userService;
-  late PlaceService placeService;
+  late ReviewService reviewService;
   late List<User> listaUsers = [];
-  late List<Place> listaPlaces = [];
-  late User user = User(
-      id: '',
-      first_name: '',
-      middle_name: '',
-      last_name: '',
-      gender: '',
-      role: '',
-      password: '',
-      email: '',
-      phone_number: '',
-      birth_date: '',
-      places: [],
-      reviews: [],
-      conversations: [],
-      user_rating: 0,
-      photo: '',
-      description: '',
-      dni: '',
-      personality: '',
-      address: '',
-      housing_offered: [],
-      emergency_contact: {});
-
+  late List<Review> listaReviews = [];
+  late List<User> filteredUsers = [];
+  late List<Review> filteredReviews = [];
   bool isLoading = true;
+  String selectedFilter = 'ID'; // Default filter for users
+  List<String> userFilters = ['ID', 'Name'];
+  List<String> reviewFilters = ['ID', 'Title', 'Author'];
 
   @override
   void initState() {
     super.initState();
     userService = UserService();
-    placeService = PlaceService();
+    reviewService = ReviewService();
     getData();
   }
 
@@ -59,6 +46,9 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     try {
       listaUsers = await userService.getUsers();
+      listaReviews = await reviewService.getReviews();
+      filteredUsers = List.from(listaUsers);
+      filteredReviews = List.from(listaReviews);
       setState(() {
         isLoading = false;
       });
@@ -75,70 +65,85 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  void getUser() async {
+  void filterUser() async {
+    String query = _searchController.text.toLowerCase();
     setState(() {
-      isLoading = true;
+      filteredUsers = listaUsers.where((user) {
+        if (selectedFilter == 'ID') {
+          return user.id.startsWith(query);
+        } else if (selectedFilter == 'Name') {
+          return user.first_name.toLowerCase().startsWith(query) ||
+              user.middle_name.toLowerCase().startsWith(query) ||
+              user.last_name.toLowerCase().startsWith(query);
+        }
+        return false;
+      }).toList();
     });
-    try {
-      user = await userService.getSearchedUser(_searchController.text);
-      setState(() {
-        isLoading = false;
-      });
-    } catch (error) {
-      setState(() {
-        isLoading = false;
-      });
-      Get.snackbar(
-        'Error',
-        'No se han podido obtener los datos.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      print('Error al comunicarse con el backend: $error');
-    }
   }
 
-  void getPlace() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      listaPlaces = await placeService.getPlaces(_searchController.text);
+  void filterReview() async {
+    String query = _searchController.text.toLowerCase();
+    if (selectedFilter == 'Author' && query.isNotEmpty) {
+      // Filtrar usuarios por nombre
+      List<User> matchingUsers = listaUsers.where((user) {
+        return user.first_name.toLowerCase().startsWith(query) ||
+            user.middle_name.toLowerCase().startsWith(query) ||
+            user.last_name.toLowerCase().startsWith(query) ||
+            user.id.startsWith(query); // Buscar también por ID de usuario
+      }).toList();
+
+      // Obtener los IDs de los usuarios coincidentes
+      List<String> matchingUserIds = matchingUsers.map((user) => user.id).toList();
+
+      // Filtrar reviews por IDs de autores coincidentes
       setState(() {
-        isLoading = false;
+        filteredReviews = listaReviews.where((review) {
+          return matchingUserIds.contains(review.author);
+        }).toList();
       });
-    } catch (error) {
+    } else {
       setState(() {
-        isLoading = false;
+        filteredReviews = listaReviews.where((review) {
+          if (selectedFilter == 'ID') {
+            return review.id!.startsWith(query);
+          } else if (selectedFilter == 'Title') {
+            return review.title.toLowerCase().startsWith(query);
+          }
+          return false;
+        }).toList();
       });
-      Get.snackbar(
-        'Error',
-        'No se han podido obtener los datos.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      print('Error al comunicarse con el backend: $error');
     }
   }
 
   void _onSearch() {
     _search = false;
-    if (_isUsersSelected) {
-      getUser();
+    if (_searchController.text.isEmpty) {
+      setState(() {
+        filteredUsers = List.from(listaUsers);
+        filteredReviews = List.from(listaReviews);
+      });
     } else {
-      getPlace();
+      if (_isUsersSelected) {
+        filterUser();
+      } else {
+        filterReview();
+      }
     }
   }
 
   void _selectUsers() {
     setState(() {
       _isUsersSelected = true;
-      getData();
+      selectedFilter = userFilters[0]; // Reset filter to default for users
+      filteredUsers = List.from(listaUsers); // Reset filtered list to full list
     });
   }
 
-  void _selectPlaces() {
+  void _selectReviews() {
     setState(() {
       _isUsersSelected = false;
-      getPlace();
+      selectedFilter = reviewFilters[0]; // Reset filter to default for reviews
+      filteredReviews = List.from(listaReviews); // Reset filtered list to full list
     });
   }
 
@@ -171,6 +176,22 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
             SizedBox(height: 16.0),
+            DropdownButton<String>(
+              value: selectedFilter,
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedFilter = newValue!;
+                });
+              },
+              items: (_isUsersSelected ? userFilters : reviewFilters)
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -196,11 +217,11 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: _selectPlaces,
+                  onTap: _selectReviews,
                   child: Column(
                     children: [
                       Text(
-                        'Places',
+                        'Reviews',
                         style: TextStyle(
                           fontSize: 16.0,
                           color: !_isUsersSelected ? Colors.blue : Colors.black,
@@ -222,33 +243,23 @@ class _SearchScreenState extends State<SearchScreen> {
             Expanded(
               child: isLoading
                   ? Center(child: CircularProgressIndicator())
-                  : _search
+                  : _isUsersSelected
                       ? ListView.builder(
-                          itemCount: listaUsers.length,
+                          itemCount: filteredUsers.length,
                           itemBuilder: (BuildContext context, int index) {
                             return Card(
-                              child: UserWidget(user: listaUsers[index]),
+                              child: UserWidget(user: filteredUsers[index]),
                             );
                           },
                         )
-                      : _isUsersSelected
-                          ? ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: 1000, // Set max width as needed
-                                maxHeight: 200, // Set max height as needed
-                              ),
-                              child: Card(
-                                child: UserWidget(user: user),
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: listaPlaces.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Card(
-                                  child: PlaceWidget(place: listaPlaces[index]),
-                                );
-                              },
-                            ),
+                      : ListView.builder(
+                          itemCount: filteredReviews.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Card(
+                              child: ReviewWidget(rev: filteredReviews[index]),
+                            );
+                          },
+                        ),
             ),
           ],
         ),

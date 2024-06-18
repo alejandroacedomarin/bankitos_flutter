@@ -23,7 +23,7 @@ const List<String> scopes = <String>[
 ];
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
-  clientId: googleClientId,
+  clientId: ,
   scopes: scopes,
 );
 
