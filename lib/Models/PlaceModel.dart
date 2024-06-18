@@ -4,8 +4,7 @@ class Place {
    String content;
    String authorId; // Cambiado a String para coincidir con el ObjectId en MongoDB
    double rating;
-   double latitude;
-   double longitude;
+   Map<String, dynamic> coords; // Coordinates field
    String photo;
    bool isBankito; // Cambiado a bool para coincidir con la estructura de tipo de lugar en el backend
    bool isPublic; // Cambiado a bool para coincidir con la estructura de tipo de lugar en el backend
@@ -22,8 +21,7 @@ class Place {
     required this.content,
     required this.authorId,
     required this.rating,
-    required this.latitude,
-    required this.longitude,
+    required this.coords,
     required this.photo,
     required this.isBankito,
     required this.isPublic,
@@ -41,9 +39,8 @@ class Place {
       title: json['title'],
       content: json['content'],
       authorId: json['author'], // Asumiendo que 'author' es el ObjectId del autor en tu backend
+      coords: json['coords'],
       rating: json['rating'].toDouble(), // Convertir a double si es necesario
-      latitude: json['coords']['latitude'].toDouble(), // Convertir a double si es necesario
-      longitude: json['coords']['longitude'].toDouble(), // Convertir a double si es necesario
       photo: json['photo'],
       isBankito: json['typeOfPlace']['bankito'],
       isPublic: json['typeOfPlace']['public'],
@@ -62,10 +59,7 @@ class Place {
       'content': content,
       'author': authorId,
       'rating': rating,
-      'coords': {
-        'latitude': latitude,
-        'longitude': longitude,
-      },
+      'coords': coords,
       'photo': photo,
       'typeOfPlace': {
         'bankito': isBankito,

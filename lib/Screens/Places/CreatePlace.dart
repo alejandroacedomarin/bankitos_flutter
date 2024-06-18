@@ -105,8 +105,10 @@ class CreatePostController extends GetxController {
         photo: imageController.text,
         authorId: id,
         rating: 1,
-        latitude: 1,
-        longitude: 1,
+        coords: {
+        'type': 'Point',
+        'coordinates': [0, 0],
+      },
         isBankito: true,
         isPublic: true,
         isCovered: true,

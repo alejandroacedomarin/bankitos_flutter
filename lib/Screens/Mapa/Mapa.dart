@@ -21,25 +21,28 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
   }
 
   Future<void> _loadMarkers() async {
-    List<Place> markerData = await authService.getMarcadores();
-    print('aki');
-    print(markerData[0].longitude);
-    setState(() {
-      _markers = markerData.map((data) {
-        LatLng position = LatLng(data.latitude, data.longitude);
-        return Marker(
-          markerId: MarkerId(data.id.toString()),
-          position: position,
-
-          infoWindow: InfoWindow(title: data.title),
-          onTap: () {
-            _onMarkerTapped(data);
-          },
-        );
-      }).toSet();
-      _loading = false;
-    });
-  }
+  List<Place> markerData = await authService.getMarcadores();
+  
+  setState(() {
+    _markers = markerData.map((data) {
+      // Extract latitude and longitude from coords
+      double latitude = data.coords['coordinates'][1];
+      double longitude = data.coords['coordinates'][0];
+      
+      LatLng position = LatLng(latitude, longitude);
+      
+      return Marker(
+        markerId: MarkerId(data.id.toString()),
+        position: position,
+        infoWindow: InfoWindow(title: data.title),
+        onTap: () {
+          _onMarkerTapped(data);
+        },
+      );
+    }).toSet();
+    _loading = false;
+  });
+}
 
   void _onMarkerTapped(Place place) {
     showDialog(
