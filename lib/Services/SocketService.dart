@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class SocketService extends GetxController {
   late IO.Socket socket;
-
+ final Rx<Function?> _newPlaceCallback = Rx<Function?>(null);
   void connectSocket() {
     // Configura la conexión al socket
     socket = IO.io('http://localhost:3000', <String, dynamic>{
@@ -25,6 +25,7 @@ class SocketService extends GetxController {
     socket.on('new-place-created', (newPlace) {
       print('New place created: $newPlace');
       showSnackbar('Nuevo lugar creado: $newPlace');
+      _newPlaceCallback.value?.call(newPlace);
     });
   }
 
@@ -45,5 +46,8 @@ class SocketService extends GetxController {
         ),
       ),
     );
+  }
+  void setNewPlaceCallback(Function callback) {
+    _newPlaceCallback.value = callback;
   }
 }
