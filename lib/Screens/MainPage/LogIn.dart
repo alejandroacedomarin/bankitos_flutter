@@ -5,7 +5,7 @@ import 'package:bankitos_flutter/Screens/MainPage/Register.dart';
 import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:bankitos_flutter/Widgets/TextBox.dart';
-import 'package:bankitos_flutter/id.dart';
+//import 'package:bankitos_flutter/id.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -23,7 +23,7 @@ const List<String> scopes = <String>[
 ];
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
-  clientId: googleClientId,
+  clientId: "",
   scopes: scopes,
 );
 
