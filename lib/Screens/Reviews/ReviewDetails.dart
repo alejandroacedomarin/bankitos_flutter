@@ -1,15 +1,15 @@
-import 'package:bankitos_flutter/Screens/Reviews/DeleteReview.dart';
-import 'package:bankitos_flutter/Screens/Reviews/UpdateReview.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
+import 'package:bankitos_flutter/Screens/Reviews/DeleteReview.dart';
+import 'package:bankitos_flutter/Screens/Reviews/UpdateReview.dart';
 import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 
-class ReveiwDetailsPage extends StatelessWidget {
+class ReviewDetailsPage extends StatelessWidget {
   final Review review;
 
-  const ReveiwDetailsPage(this.review, {Key? key}) : super(key: key);
+  const ReviewDetailsPage(this.review, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class ReveiwDetailsPage extends StatelessWidget {
                 const SizedBox(height: 5),
                 _buildInfoBox('Content:', review.content),
                 const SizedBox(height: 5),
-                _buildInfoBox('Content:', review.stars),
+                _buildInfoBox('Stars:', _buildStarRating(review.stars)),
                 const SizedBox(height: 20),
                 SignInButton(
                   onPressed: () {
@@ -85,26 +85,46 @@ class ReveiwDetailsPage extends StatelessWidget {
               color: Color.fromARGB(177, 0, 0, 0),
             ),
           ),
-          // Verificar si el contenido es de tipo double
-          if (content is double)
-            Text(
-              content.toStringAsFixed(0),
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color.fromARGB(177, 0, 0, 0),
-              ),
-            ),
-          // Si no es de tipo double, simplemente mostrarlo como texto
-          if (!(content is double))
-            Text(
-              content.toString(),
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color.fromARGB(177, 0, 0, 0),
-              ),
-            ),
+          SizedBox(height: 5),
+          content is Widget
+              ? content
+              : Text(
+                  content.toString(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color.fromARGB(177, 0, 0, 0),
+                  ),
+                ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStarRating(double stars) {
+    // Calcula el número de estrellas enteras y medias estrellas
+    int fullStars = stars.floor();
+    bool halfStar = stars - fullStars >= 0.5;
+
+    List<Widget> starWidgets = [];
+
+    // Agrega las estrellas enteras
+    for (int i = 0; i < fullStars; i++) {
+      starWidgets.add(Icon(Icons.star, color: Colors.black));
+    }
+
+    // Agrega media estrella si es necesario
+    if (halfStar) {
+      starWidgets.add(Icon(Icons.star_half, color: Colors.black));
+    }
+
+    // Si el número de estrellas es menor a 5, agrega estrellas vacías
+    int remainingStars = 5 - starWidgets.length;
+    for (int i = 0; i < remainingStars; i++) {
+      starWidgets.add(Icon(Icons.star_border, color: Colors.black));
+    }
+
+    return Row(
+      children: starWidgets,
     );
   }
 }

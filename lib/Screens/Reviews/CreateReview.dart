@@ -7,6 +7,7 @@ import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Services/ReviewService.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
+import 'package:bankitos_flutter/Widgets/ReviewWidgets/StarsReview.dart';
 
 late UserService userService;
 late ReviewService reviewService;
@@ -15,10 +16,10 @@ class CreateReviewScreen extends StatefulWidget {
   CreateReviewScreen({Key? key}) : super(key: key);
 
   @override
-  _CreateReviewScreen createState() => _CreateReviewScreen();
+  _CreateReviewScreenState createState() => _CreateReviewScreenState();
 }
 
-class _CreateReviewScreen extends State<CreateReviewScreen> {
+class _CreateReviewScreenState extends State<CreateReviewScreen> {
   final CreateReviewController controller = Get.put(CreateReviewController());
 
   @override
@@ -35,42 +36,53 @@ class _CreateReviewScreen extends State<CreateReviewScreen> {
         title: const Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [Text('BanKitos'), SizedBox(width: 60)],
+            children: [
+              Text('BanKitos'),
+              SizedBox(width: 60),
+            ],
           ),
         ),
         backgroundColor: Colors.orange,
       ),
-      // #docregion addWidget
       body: SingleChildScrollView(
-          child: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 50),
-            const Text(
-              'Create Place',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 50,
+        child: Center(
+          child: Column(
+            children: [
+              SizedBox(height: 50),
+              const Text(
+                'Create Review',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 50,
+                ),
               ),
-            ),
-            const SizedBox(height: 40),
-            const SizedBox(height: 15),
-            ParamTextBox(
-                controller: controller.titleController, text: 'Título'),
-            const SizedBox(height: 15),
-            ParamTextBox(
-                controller: controller.contentController, text: 'Contenido'),
-            const SizedBox(height: 15),
-            ParamTextBox(
-                controller: controller.startsController, text: 'Starts (0-5)'),
-            const SizedBox(height: 15),
-            SignInButton(
+              SizedBox(height: 40),
+              SizedBox(height: 15),
+              ParamTextBox(
+                  controller: controller.titleController, text: 'Título'),
+              SizedBox(height: 15),
+              ParamTextBox(
+                  controller: controller.contentController, text: 'Contenido'),
+              SizedBox(height: 15),
+              // Reemplazar ParamTextBox por StarRating
+              StarRating(
+                initialRating:
+                    0.0, // Puedes definir una calificación inicial si es necesario
+                onRatingChanged: (double rating) {
+                  // Actualiza el valor de las estrellas en el controlador
+                  controller.startsController.text = rating.toString();
+                },
+              ),
+              SizedBox(height: 15),
+              SignInButton(
                 onPressed: () => controller.createReview(),
-                text: 'Crear Review'),
-            const SizedBox(height: 40),
-          ],
+                text: 'Crear Review',
+              ),
+              SizedBox(height: 40),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }
@@ -79,9 +91,6 @@ class CreateReviewController extends GetxController {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController startsController = TextEditingController();
-
-  bool invalid = false;
-  bool parameters = false;
 
   void createReview() {
     String id = userService.getUserId();
@@ -127,6 +136,11 @@ class CreateReviewController extends GetxController {
             snackPosition: SnackPosition.BOTTOM,
           );
           Get.to(() => ViewReviewsScreen());
+
+          // Limpiar los textboxes después de crear el review
+          titleController.clear();
+          contentController.clear();
+          startsController.clear();
         }).catchError((error) {
           // Manejar errores de solicitud HTTP
           Get.snackbar(

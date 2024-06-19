@@ -14,7 +14,6 @@ import 'package:bankitos_flutter/Widgets/UserDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class SearchScreen extends StatefulWidget {
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -96,7 +95,8 @@ class _SearchScreenState extends State<SearchScreen> {
       }).toList();
 
       // Obtener los IDs de los usuarios coincidentes
-      List<String> matchingUserIds = matchingUsers.map((user) => user.id).toList();
+      List<String> matchingUserIds =
+          matchingUsers.map((user) => user.id).toList();
 
       // Filtrar reviews por IDs de autores coincidentes
       setState(() {
@@ -146,14 +146,15 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _isUsersSelected = false;
       selectedFilter = reviewFilters[0]; // Reset filter to default for reviews
-      filteredReviews = List.from(listaReviews); // Reset filtered list to full list
+      filteredReviews =
+          List.from(listaReviews); // Reset filtered list to full list
     });
   }
 
   Widget _buildReviewCard(Review review) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => ReveiwDetailsPage(review));
+        Get.to(ReviewDetailsPage(review));
       },
       child: Card(
         color: Colors.orange[100], // Fondo de color naranja suave

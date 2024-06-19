@@ -13,7 +13,7 @@ class SocketService extends GetxController {
     });
 
     // Conéctate al socket
-    socket.connect();
+    //socket.connect();
 
     // Escucha cuando el socket se conecta
     socket.on('user-logged-in', (_) {
