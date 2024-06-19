@@ -23,11 +23,7 @@ class UserDetails extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: StarRating(rating: user.user_rating),
-                  ),
+                 
                   CircleAvatar(
                     radius: 50.0,
                     backgroundImage: user.photo.isEmpty

@@ -4,13 +4,16 @@ import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Screens/Reviews/ReviewDetails.dart';
 import 'package:bankitos_flutter/Screens/Reviews/UpdateReview.dart';
 import 'package:bankitos_flutter/Services/ReviewService.dart';
+import 'package:bankitos_flutter/Screens/Reviews/ReviewDetails.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Services/PlaceService.dart';
 import 'package:bankitos_flutter/Widgets/PlaceCard.dart';
 import 'package:bankitos_flutter/Widgets/ReviewCard.dart';
 import 'package:bankitos_flutter/Widgets/UserCard.dart';
+import 'package:bankitos_flutter/Widgets/UserDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -147,6 +150,107 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  Widget _buildReviewCard(Review review) {
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => ReveiwDetailsPage(review));
+      },
+      child: Card(
+        color: Colors.orange[100], // Fondo de color naranja suave
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                review.title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
+              SizedBox(height: 8.0),
+              Text(
+                review.content,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.black54,
+                ),
+              ),
+              SizedBox(height: 8.0),
+              Row(
+                children: List.generate(5, (i) {
+                  return Icon(
+                    i < review.stars ? Icons.star : Icons.star_border,
+                    color: Colors.yellow,
+                  );
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserCard(User user) {
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => UserDetails(user));
+      },
+      child: Card(
+        color: Colors.orange[100], // Fondo de color naranja suave
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              user.photo.isNotEmpty
+                  ? Image.network(
+                      user.photo,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.asset(
+                      'assets/userdefec.png',
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+              SizedBox(width: 16.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${user.first_name} ${user.middle_name} ${user.last_name}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(
+                      user.description,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,17 +351,13 @@ class _SearchScreenState extends State<SearchScreen> {
                       ? ListView.builder(
                           itemCount: filteredUsers.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Card(
-                              child: UserWidget(user: filteredUsers[index]),
-                            );
+                            return _buildUserCard(filteredUsers[index]);
                           },
                         )
                       : ListView.builder(
                           itemCount: filteredReviews.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Card(
-                              child: ReviewWidget(rev: filteredReviews[index]),
-                            );
+                            return _buildReviewCard(filteredReviews[index]);
                           },
                         ),
             ),

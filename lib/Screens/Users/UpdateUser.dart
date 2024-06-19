@@ -141,9 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   _buildEditableTextField('Middle Name', _middleNameController),
                   _buildEditableTextField('Last Name', _lastNameController),
                   buildEditableSelectionField('Gender', _genderController),
-                  _buildEditableTextField('Dni', _dniController),
-                  _buildEditableTextField('Email', _emailController),
-                  _buildEditableTextField('Phone Number', _phoneNumberController),
+                  
                   _buildEditableTextField('Birth Date', _birthDateController),
                   _buildPasswordField('Password', _passwordController),
                   _buildEditableTextField('Address', _addressController),

@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
+import 'package:bankitos_flutter/Screens/Places/PlaceDetails.dart';
+import 'package:bankitos_flutter/Screens/Reviews/ReviewDetails.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Services/ReviewService.dart';
 import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:bankitos_flutter/main.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:bankitos_flutter/Models/ReviewModel.dart';
@@ -179,13 +182,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
   }
 
   Widget _buildPlacesTab() {
-    return _isLoadingPlaces
-        ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
-        : ListView.builder(
-            itemCount: _places.length,
-            itemBuilder: (context, index) {
-              Place place = _places[index];
-              return Card(
+  return _isLoadingPlaces
+      ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+      : ListView.builder(
+          itemCount: _places.length,
+          itemBuilder: (context, index) {
+            Place place = _places[index];
+            return GestureDetector(
+              onTap: () {
+                Get.to(() => PlaceDetailsPage(place));
+              },
+              child: Card(
                 color: Colors.orange[100], // Fondo de color naranja suave
                 margin: EdgeInsets.symmetric(vertical: 8.0),
                 child: Padding(
@@ -242,19 +249,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                     ],
                   ),
                 ),
-              );
-            },
-          );
-  }
+              ),
+            );
+          },
+        );
+}
+
 
   Widget _buildReviewsTab() {
-    return _isLoadingReviews
-        ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
-        : ListView.builder(
-            itemCount: _reviews.length,
-            itemBuilder: (context, index) {
-              Review review = _reviews[index];
-              return Card(
+  return _isLoadingReviews
+      ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+      : ListView.builder(
+          itemCount: _reviews.length,
+          itemBuilder: (context, index) {
+            Review review = _reviews[index];
+            return GestureDetector(
+              onTap: () {
+                Get.to(() => ReveiwDetailsPage(review));
+              },
+              child: Card(
                 color: Colors.orange[100], // Fondo de color naranja suave
                 margin: EdgeInsets.symmetric(vertical: 8.0),
                 child: Padding(
@@ -291,11 +304,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                     ],
                   ),
                 ),
-              );
-            },
-          );
-  }
-
+              ),
+            );
+          },
+        );
+}
   Widget _buildPersonalInfo() {
     return ListView(
       children: [
@@ -335,7 +348,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
             _buildPersonalInformation('Role', user.role),
             _buildPersonalInformation('Email', user.email),
             _buildPersonalInformation('Phone Number', user.phone_number),
-            _buildPersonalInformation('Birth Date', user.birth_date),
+            _buildProfileInformation('Birth Date', user.birth_date),
             
           ],
         ),
@@ -350,28 +363,37 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
   }
 
   Widget _buildProfileInformation(String label, String value) {
-    if (value.isEmpty) {
-      return SizedBox.shrink();
-    }
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$label:',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(width: 10.0),
-        Expanded(
-          child: Text(
-            value,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        SizedBox(height: 10.0),
-      ],
-    );
+  if (value.isEmpty) {
+    return SizedBox.shrink();
   }
 
+  // Check if the value is a date and format it
+  String formattedValue = value;
+  try {
+    DateTime date = DateTime.parse(value);
+    formattedValue = DateFormat('yyyy-MM-dd').format(date);
+  } catch (e) {
+    // If value is not a date, leave it as is
+  }
+
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        '$label:',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      SizedBox(width: 10.0),
+      Expanded(
+        child: Text(
+          formattedValue,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      SizedBox(height: 10.0),
+    ],
+  );
+}
   Widget _buildPersonalInformation(String label, String value) {
     if (value.isEmpty) {
       return SizedBox.shrink();
