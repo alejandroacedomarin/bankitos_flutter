@@ -284,8 +284,8 @@ void selectImage() async {
                               authorId: getUserId(),
                               rating: double.tryParse(ratingController.text) ?? 0,
                               coords: {
-                                  'latitude': double.tryParse(latitudeController.text) ?? 0,
-                                  'longitude': double.tryParse(longitudeController.text) ?? 0,
+                                  'type': 'Point',
+                                  'coordinates': [double.tryParse(latitudeController.text) ?? 0, double.tryParse(longitudeController.text) ?? 0],
                                },
                               photo: photoUrlController.text,
                               isBankito: _selectedPlace?.isBankito ?? false,
