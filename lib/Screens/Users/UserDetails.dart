@@ -19,13 +19,13 @@ import 'package:bankitos_flutter/Screens/MainPage/LogIn.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
 
-
 class UserProfileScreen extends StatefulWidget {
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> with SingleTickerProviderStateMixin {
+class _UserProfileScreenState extends State<UserProfileScreen>
+    with SingleTickerProviderStateMixin {
   final UserDetailsController controller = Get.put(UserDetailsController());
   late UserService userService;
   late ReviewService reviewService;
@@ -124,32 +124,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
         backgroundColor: Colors.orange,
         actions: [
           if (!_isLoading)
-          /* SignInButton(
+            /* SignInButton(
           onPressed: () => controller.logOut(),
           text: 'Log Out',
         ), */
-        IconButton(
+            IconButton(
               icon: Icon(Icons.login_outlined),
               onPressed: () {
                 // Abrir pantalla de edición
                 controller.logOut();
-            
               },
             ),
-          
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                // Abrir pantalla de edición
-                Get.to(EditProfileScreen(user: user))?.then((_) {
-                  getData();
-                });
-              },
-            ),
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              // Abrir pantalla de edición
+              Get.to(EditProfileScreen(user: user))?.then((_) {
+                getData();
+              });
+            },
+          ),
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+          ? Center(
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
           : Padding(
               padding: EdgeInsets.all(16.0),
               child: Column(
@@ -157,7 +157,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
                   CircleAvatar(
                     radius: 50.0,
                     backgroundImage: user.photo.isEmpty
-                        ? AssetImage('assets/userdefec.png') as ImageProvider<Object>?
+                        ? AssetImage('assets/userdefec.png')
+                            as ImageProvider<Object>?
                         : NetworkImage(user.photo),
                   ),
                   const SizedBox(height: 10.0),
@@ -196,137 +197,142 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
   }
 
   Widget _buildPlacesTab() {
-  return _isLoadingPlaces
-      ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
-      : ListView.builder(
-          itemCount: _places.length,
-          itemBuilder: (context, index) {
-            Place place = _places[index];
-            return GestureDetector(
-              onTap: () {
-                Get.to(() => PlaceDetailsPage(place));
-              },
-              child: Card(
-                color: Colors.orange[100], // Fondo de color naranja suave
-                margin: EdgeInsets.symmetric(vertical: 8.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      place.photo.isNotEmpty
-                          ? Image.network(
-                              place.photo,
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(
-                              'assets/userdefec.png',
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                            ),
-                      SizedBox(width: 16.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              place.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0,
+    return _isLoadingPlaces
+        ? Center(
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+        : ListView.builder(
+            itemCount: _places.length,
+            itemBuilder: (context, index) {
+              Place place = _places[index];
+              return GestureDetector(
+                onTap: () {
+                  Get.to(() => PlaceDetailsPage(place));
+                },
+                child: Card(
+                  color: Colors.orange[100], // Fondo de color naranja suave
+                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        place.photo.isNotEmpty
+                            ? Image.network(
+                                place.photo,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                'assets/userdefec.png',
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
                               ),
-                            ),
-                            SizedBox(height: 8.0),
-                            Text(
-                              place.content,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.black54,
+                        SizedBox(width: 16.0),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                place.title,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16.0,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 8.0),
-                            Row(
-                              children: List.generate(5, (i) {
-                                return Icon(
-                                  i < place.rating ? Icons.star : Icons.star_border,
-                                  color: Colors.yellow,
-                                );
-                              }),
-                            ),
-                          ],
+                              SizedBox(height: 8.0),
+                              Text(
+                                place.content,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              SizedBox(height: 8.0),
+                              Row(
+                                children: List.generate(5, (i) {
+                                  return Icon(
+                                    i < place.rating
+                                        ? Icons.star
+                                        : Icons.star_border,
+                                    color: Colors.yellow,
+                                  );
+                                }),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
-}
-
+              );
+            },
+          );
+  }
 
   Widget _buildReviewsTab() {
-  return _isLoadingReviews
-      ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
-      : ListView.builder(
-          itemCount: _reviews.length,
-          itemBuilder: (context, index) {
-            Review review = _reviews[index];
-            return GestureDetector(
-              onTap: () {
-                Get.to(() => ReveiwDetailsPage(review));
-              },
-              child: Card(
-                color: Colors.orange[100], // Fondo de color naranja suave
-                margin: EdgeInsets.symmetric(vertical: 8.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        review.title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0,
+    return _isLoadingReviews
+        ? Center(
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+        : ListView.builder(
+            itemCount: _reviews.length,
+            itemBuilder: (context, index) {
+              Review review = _reviews[index];
+              return GestureDetector(
+                onTap: () {
+                  Get.to(ReviewDetailsPage(review));
+                },
+                child: Card(
+                  color: Colors.orange[100], // Fondo de color naranja suave
+                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          review.title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 8.0),
-                      Text(
-                        review.content,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: Colors.black54,
+                        SizedBox(height: 8.0),
+                        Text(
+                          review.content,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.black54,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 8.0),
-                      Row(
-                        children: List.generate(5, (i) {
-                          return Icon(
-                            i < review.stars ? Icons.star : Icons.star_border,
-                            color: Colors.yellow,
-                          );
-                        }),
-                      ),
-                    ],
+                        SizedBox(height: 8.0),
+                        Row(
+                          children: List.generate(5, (i) {
+                            return Icon(
+                              i < review.stars ? Icons.star : Icons.star_border,
+                              color: Colors.yellow,
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
-}
+              );
+            },
+          );
+  }
+
   Widget _buildPersonalInfo() {
     return ListView(
       children: [
-        
         const SizedBox(height: 20.0),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,7 +351,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
           ],
         ),
         SizedBox(height: 20.0),
-        Divider(color: Colors.orange,),
+        Divider(
+          color: Colors.orange,
+        ),
         SizedBox(height: 20.0),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,47 +371,49 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
             _buildPersonalInformation('Email', user.email),
             _buildPersonalInformation('Phone Number', user.phone_number),
             _buildProfileInformation('Birth Date', user.birth_date),
-            
           ],
         ),
         SizedBox(height: 20.0),
-        const Divider(color: Colors.orange,),
+        const Divider(
+          color: Colors.orange,
+        ),
       ],
     );
   }
 
   Widget _buildProfileInformation(String label, String value) {
-  if (value.isEmpty) {
-    return SizedBox.shrink();
-  }
+    if (value.isEmpty) {
+      return SizedBox.shrink();
+    }
 
-  // Check if the value is a date and format it
-  String formattedValue = value;
-  try {
-    DateTime date = DateTime.parse(value);
-    formattedValue = DateFormat('yyyy-MM-dd').format(date);
-  } catch (e) {
-    // If value is not a date, leave it as is
-  }
+    // Check if the value is a date and format it
+    String formattedValue = value;
+    try {
+      DateTime date = DateTime.parse(value);
+      formattedValue = DateFormat('yyyy-MM-dd').format(date);
+    } catch (e) {
+      // If value is not a date, leave it as is
+    }
 
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        '$label:',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      SizedBox(width: 10.0),
-      Expanded(
-        child: Text(
-          formattedValue,
-          overflow: TextOverflow.ellipsis,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$label:',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-      ),
-      SizedBox(height: 10.0),
-    ],
-  );
-}
+        SizedBox(width: 10.0),
+        Expanded(
+          child: Text(
+            formattedValue,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        SizedBox(height: 10.0),
+      ],
+    );
+  }
+
   Widget _buildPersonalInformation(String label, String value) {
     if (value.isEmpty) {
       return SizedBox.shrink();
@@ -425,10 +435,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
         SizedBox(height: 20.0),
       ],
     );
-  } 
+  }
 }
 
-  class UserDetailsController extends GetxController {
+class UserDetailsController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<void> _handleSignOut() async {
@@ -438,12 +448,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
     } catch (error) {
       print('Error al cerrar sesión en Google: $error');
     }
-  } 
+  }
 
   void logOut() async {
     await _handleSignOut();
-   
-    Restart.restartApp();    
+
+    Restart.restartApp();
   }
 }
-
