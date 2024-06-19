@@ -5,7 +5,7 @@ import 'package:bankitos_flutter/Screens/MainPage/Register.dart';
 import 'package:bankitos_flutter/Widgets/Button.dart';
 import 'package:bankitos_flutter/Widgets/NavBar.dart';
 import 'package:bankitos_flutter/Widgets/TextBox.dart';
-//import 'package:bankitos_flutter/id.dart';
+import 'package:bankitos_flutter/id.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -23,7 +23,7 @@ const List<String> scopes = <String>[
 ];
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
-  clientId: "",
+  clientId: googleClientId,
   scopes: scopes,
 );
 
@@ -254,18 +254,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(width: 160),
-              Text('BanKitos'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
+    appBar: AppBar(
+  automaticallyImplyLeading: false,
+  title: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Spacer(), // Añade un espaciador antes del título para centrarlo
+      const Text('BanKitos'),
+      Spacer(flex: 2), // Añade un espaciador más grande después del título para empujar los botones hacia la derecha
+      Row(
+        children: [
           Padding(
             padding: const EdgeInsets.all(2.0),
             child: ElevatedButton(
@@ -302,8 +300,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
-        backgroundColor: Colors.orange,
       ),
+    ],
+  ),
+  backgroundColor: Colors.orange,
+),
       body: Stack(
         children: [
           // Imagen de fondo

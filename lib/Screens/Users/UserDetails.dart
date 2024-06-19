@@ -23,6 +23,7 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> with SingleTickerProviderStateMixin {
+  final UserDetailsController controller = Get.put(UserDetailsController());
   late UserService userService;
   late ReviewService reviewService;
   late User user;
@@ -120,6 +121,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
         backgroundColor: Colors.orange,
         actions: [
           if (!_isLoading)
+          /* SignInButton(
+          onPressed: () => controller.logOut(),
+          text: 'Log Out',
+        ), */
+        IconButton(
+              icon: Icon(Icons.login_outlined),
+              onPressed: () {
+                // Abrir pantalla de edición
+                controller.logOut();
+            
+              },
+            ),
+          
             IconButton(
               icon: Icon(Icons.edit),
               onPressed: () {
@@ -341,10 +355,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
         ),
         SizedBox(height: 20.0),
         const Divider(color: Colors.orange,),
-        /* SignInButton(
-          onPressed: () => controller.logOut(),
-          text: 'Log Out',
-        ), */
       ],
     );
   }
@@ -393,55 +403,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> with SingleTicker
         SizedBox(height: 20.0),
       ],
     );
-  }
-
- 
+  } 
 }
-
-
-// class UserDetailsController extends GetxController {
-//   final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  // Future<void> _handleSignOut() async {
-  //   try {
-  //     await _googleSignIn.disconnect();
-  //     print('Google Sign Out exitoso');
-  //   } catch (error) {
-  //     print('Error al cerrar sesión en Google: $error');
-  //   }
-
-
-  // void logOut() async {
-  //   try {
-  //     // Desconectar de Google
-  //     await _googleSignIn.disconnect();
-  //     print('Google Sign Out exitoso');
-  //   } catch (error) {
-  //     print('Error al cerrar sesión en Google: $error');
-  //   }
-    
-
-  //   }
-  //   // Luego cerrar sesión en la aplicación
-  //   userService.logOut().then((statusCode) {
-  //     // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
-  //     print('Log Out exitoso');
-  //     Get.snackbar(
-  //       'Log Out',
-  //       'Log Out Successfull',
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //     Get.offAll(() => LoginScreen());
-  //   }).catchError((error) {
-  //     // Manejar errores de solicitud HTTP
-  //     Get.snackbar(
-  //       'Error',
-  //       'Error with Log Out',
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //     print('Error al hacer logout: $error');
-  //   });
-  // } 
 
   class UserDetailsController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
