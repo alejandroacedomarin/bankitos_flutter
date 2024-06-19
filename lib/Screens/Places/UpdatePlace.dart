@@ -6,6 +6,10 @@ import 'package:bankitos_flutter/Widgets/TextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Services/PlaceService.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
+import 'package:bankitos_flutter/Services/cloudinary_service.dart';
+
 
 late UserService userService;
 late PlaceService placeService;
@@ -27,8 +31,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
     super.initState();
     userService = UserService();
     placeService = PlaceService();
-    controller = UpdatePostController(
-        widget.place); // Pasa el lugar existente al controlador
+    controller = UpdatePostController(widget.place); // Pasa el lugar existente al controlador
   }
 
   @override
@@ -61,8 +64,7 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
               ParamTextBox(
                 controller: controller.titleController,
                 text: 'Title',
-                initialValue:
-                    widget.place.title, // Establece el valor inicial del título
+                initialValue: widget.place.title, // Establece el valor inicial del título
               ),
               const SizedBox(height: 15),
               const Text(
@@ -77,11 +79,9 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
               ParamTextBox(
                 controller: controller.contentController,
                 text: 'Content',
-                initialValue: widget
-                    .place.content, // Establece el valor inicial del contenido
+                initialValue: widget.place.content, // Establece el valor inicial del contenido
               ),
               const SizedBox(height: 15),
-
               const Text(
                 'Image URL:',
                 style: TextStyle(
@@ -94,11 +94,14 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
               ParamTextBox(
                 controller: controller.urlController,
                 text: 'Image URL',
-                initialValue: widget
-                    .place.photo, // Establece el valor inicial del contenido
+                initialValue: widget.place.photo, // Establece el valor inicial del contenido
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => controller.selectImage(),
+                child: Text('Select Image'),
               ),
               const SizedBox(height: 15),
-
               const Text(
                 'Address:',
                 style: TextStyle(
@@ -111,12 +114,9 @@ class _UpdatePostScreenState extends State<UpdatePostScreen> {
               ParamTextBox(
                 controller: controller.addressController,
                 text: 'Address',
-                initialValue: widget
-                    .place.address, // Establece el valor inicial del contenido
+                initialValue: widget.place.address, // Establece el valor inicial del contenido
               ),
-              SizedBox(
-                height: 40,
-              ),
+              const SizedBox(height: 40),
               // Otras ParamTextBox para los demás campos con sus valores iniciales correspondientes
               SignInButton(
                 onPressed: () => controller.updatePost(),
@@ -140,13 +140,40 @@ class UpdatePostController extends GetxController {
   // Otros controladores de texto para los demás campos
 
   late Place _existingPlace;
+  late CloudinaryService _cloudinaryService; // Add CloudinaryService
 
   UpdatePostController(Place existingPlace)
       : _existingPlace = existingPlace,
         titleController = TextEditingController(text: existingPlace.title),
         contentController = TextEditingController(text: existingPlace.content),
         urlController = TextEditingController(text: existingPlace.photo),
-        addressController = TextEditingController(text: existingPlace.address);
+        addressController = TextEditingController(text: existingPlace.address) {
+    _cloudinaryService = CloudinaryService(); // Initialize CloudinaryService
+  }
+
+  Future<Uint8List> pickImage(ImageSource source) async {
+    final ImagePicker _imagePicker = ImagePicker();
+    XFile? _file = await _imagePicker.pickImage(source: source);
+    if (_file != null) {
+      return await _file.readAsBytes();
+    } else {
+      throw Exception('No image selected');
+    }
+  }
+
+  void selectImage() async {
+    try {
+      Uint8List img = await pickImage(ImageSource.gallery);
+      String? imageUrl = await _cloudinaryService.uploadImage(img);
+      if (imageUrl != null) {
+        urlController.text = imageUrl;
+      } else {
+        Get.snackbar('Error', 'Failed to upload image', snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+    }
+  }
 
   void updatePost() {
     // Obtén los nuevos valores del lugar del controlador de texto

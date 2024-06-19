@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:bankitos_flutter/Screens/Places/GetPlaces.dart';
 import 'package:flutter/material.dart';
 import 'package:bankitos_flutter/Models/PlaceModel.dart';
@@ -6,6 +7,9 @@ import 'package:bankitos_flutter/Widgets/TextBox.dart';
 import 'package:bankitos_flutter/Services/UserService.dart';
 import 'package:bankitos_flutter/Services/PlaceService.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:bankitos_flutter/utils/pickImage.dart';
+import 'package:bankitos_flutter/Services/cloudinary_service.dart';
 
 late UserService userService;
 late PlaceService placeService;
@@ -39,40 +43,54 @@ class _CreatePostScreen extends State<CreatePostScreen> {
         ),
         backgroundColor: Colors.orange,
       ),
-      // #docregion addWidget
       body: SingleChildScrollView(
-          child: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 50),
-            const Text(
-              'Create Place',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 50,
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 50),
+              const Text(
+                'Create Place',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 50,
+                ),
               ),
-            ),
-            const SizedBox(height: 40),
-            const SizedBox(height: 15),
-            ParamTextBox(
-                controller: controller.titleController, text: 'Título'),
-            const SizedBox(height: 15),
-            ParamTextBox(
-                controller: controller.contentController, text: 'Contenido'),
-            const SizedBox(height: 15),
-            ParamTextBox(
-                controller: controller.imageController,
-                text: 'Url de la imágen'),
-            const SizedBox(height: 15),
-            ParamTextBox(
-                controller: controller.addressController, text: 'Dirección'),
-            const SizedBox(height: 15),
-            SignInButton(
-                onPressed: () => controller.createPost(), text: 'Crear Post'),
-            const SizedBox(height: 40),
-          ],
+              const SizedBox(height: 40),
+              const SizedBox(height: 15),
+              ParamTextBox(
+                controller: controller.titleController, 
+                text: 'Título'
+              ),
+              const SizedBox(height: 15),
+              ParamTextBox(
+                controller: controller.contentController, 
+                text: 'Contenido'
+              ),
+              const SizedBox(height: 15),
+              ParamTextBox(
+                controller: controller.imageController, 
+                text: 'Url de la imágen'
+              ),
+              const SizedBox(height: 15),
+              IconButton(
+                icon: Icon(Icons.add_a_photo_outlined),
+                onPressed: controller.selectImage,
+              ),
+              const SizedBox(height: 15),
+              ParamTextBox(
+                controller: controller.addressController, 
+                text: 'Dirección'
+              ),
+              const SizedBox(height: 15),
+              SignInButton(
+                onPressed: () => controller.createPost(), 
+                text: 'Crear Post'
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }
@@ -82,9 +100,24 @@ class CreatePostController extends GetxController {
   final TextEditingController contentController = TextEditingController();
   final TextEditingController imageController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  final CloudinaryService _cloudinaryService = CloudinaryService();
 
   bool invalid = false;
   bool parameters = false;
+
+  void selectImage() async {
+  try {
+    Uint8List img = await pickImage(ImageSource.gallery);
+    String? imageUrl = await _cloudinaryService.uploadImage(img);
+    if (imageUrl != null) {
+      imageController.text = imageUrl;
+    } else {
+      Get.snackbar('Error', 'Failed to upload image', snackPosition: SnackPosition.BOTTOM);
+    }
+  } catch (e) {
+    Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+  }
+}
 
   void createPost() {
     String id = userService.getUserId();
@@ -106,9 +139,9 @@ class CreatePostController extends GetxController {
         authorId: id,
         rating: 1,
         coords: {
-        'type': 'Point',
-        'coordinates': [0, 0],
-      },
+          'type': 'Point',
+          'coordinates': [0, 0],
+        },
         isBankito: true,
         isPublic: true,
         isCovered: true,
@@ -127,7 +160,6 @@ class CreatePostController extends GetxController {
         modifiedDate: DateTime.now(),
       );
       placeService.createPlace(newPlace).then((statusCode) {
-        // La solicitud se completó exitosamente, puedes realizar acciones adicionales si es necesario
         print('Place creado exitosamente');
         Get.snackbar(
           '¡Place Creado!',
@@ -136,7 +168,6 @@ class CreatePostController extends GetxController {
         );
         Get.to(() => PlaceListPage());
       }).catchError((error) {
-        // Manejar errores de solicitud HTTP
         Get.snackbar(
           'Error',
           'Ha ocurrido un error',

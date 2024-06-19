@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:bankitos_flutter/Models/UserModel.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:bankitos_flutter/Services/cloudinary_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final User user;
@@ -21,6 +21,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late UserService userService;
   final box = GetStorage();
+  final CloudinaryService cloudinaryService = CloudinaryService();
 
   late TextEditingController _firstNameController;
   late TextEditingController _middleNameController;
@@ -47,7 +48,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     userService = UserService();
 
-    // Inicializa los controladores con los valores actuales del usuario
+    // Initialize controllers with current user values
     _firstNameController = TextEditingController(text: widget.user.first_name);
     _middleNameController = TextEditingController(text: widget.user.middle_name);
     _lastNameController = TextEditingController(text: widget.user.last_name);
@@ -68,7 +69,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
-    // Dispose de los controladores al finalizar
+    // Dispose controllers when done
     _firstNameController.dispose();
     _middleNameController.dispose();
     _lastNameController.dispose();
@@ -90,7 +91,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   void selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
-    _photoController.text = img.toString();
+    String? imageUrl = await cloudinaryService.uploadImage(img);
+    if (imageUrl != null) {
+      setState(() {
+        _photoController.text = imageUrl;
+      });
+    } else {
+      Get.snackbar(
+        'Error',
+        'Failed to upload image. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
@@ -111,7 +123,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 50.0,
-                        backgroundImage: widget.user.photo.isEmpty
+                        backgroundImage: _photoController.text.isEmpty
                             ? AssetImage('assets/userdefec.png') as ImageProvider<Object>?
                             : NetworkImage(_photoController.text),
                       ),
@@ -177,7 +189,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
           ),
-          SizedBox(width: 10), // Espaciado entre el texto y el TextField
+          SizedBox(width: 10), // Spacing between text and TextField
           Expanded(
             flex: 3,
             child: TextField(
@@ -208,7 +220,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
           ),
-          SizedBox(width: 10), // Espaciado entre el texto y el ScrollView
+          SizedBox(width: 10), // Spacing between text and ScrollView
           Expanded(
             flex: 3,
             child: SingleChildScrollView(
@@ -234,7 +246,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       onTap: () {
         if (!isSelected) {
           controller.text = option;
-          updateState(); // Actualizar el estado del widget
+          updateState(); // Update widget state
         }
       },
       child: Container(
@@ -325,7 +337,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(width: 10), // Espaciado entre el texto y el TextField
+          SizedBox(width: 10), // Spacing between text and TextField
           Expanded(
             flex: 3,
             child: TextField(
@@ -346,16 +358,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Eliminar perfil'),
+          title: Text('Delete Profile'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Para eliminar este perfil tienes que introducir:'),
-              Text('Eliminar perfil: ${widget.user.email}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('To delete this profile, please enter:'),
+              Text('Delete profile: ${widget.user.email}', style: TextStyle(fontWeight: FontWeight.bold)),
               TextField(
                 controller: _deleteProfileController,
                 decoration: InputDecoration(
-                  labelText: 'Eliminar perfil: ${widget.user.email}',
+                  labelText: 'Delete profile: ${widget.user.email}',
                 ),
               ),
             ],
@@ -369,11 +381,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             TextButton(
               onPressed: () {
-                if (_deleteProfileController.text == 'Eliminar perfil: ${widget.user.email}') {
+                if (_deleteProfileController.text == 'Delete profile: ${widget.user.email}') {
                   deleteUser();
                 }
               },
-              child: Text('Eliminar', style: TextStyle(color: Colors.red)),
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -385,7 +397,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       String message = await userService.deleteUser();
       Get.snackbar(
-        'Mensage',
+        'Message',
         message,
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -394,7 +406,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (error) {
       Get.snackbar(
         'Error',
-        'Vuelve a intentarlo',
+        'Please try again',
         snackPosition: SnackPosition.BOTTOM,
       );
     }

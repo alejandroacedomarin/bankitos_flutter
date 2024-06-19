@@ -105,14 +105,14 @@ class PlaceDetailsPage extends StatelessWidget {
                   onPressed: () {
                     Get.to(UpdatePostScreen(place: place));
                   },
-                  text: 'Update this Post',
+                  text: 'Update this Place',
                 ),
                 const SizedBox(height: 20),
                 SignInButton(
                   onPressed: () {
                     Get.to(DeletePostScreen(place: place));
                   },
-                  text: 'Delete this Post',
+                  text: 'Delete this Place',
                 ),
               ],
             ),
